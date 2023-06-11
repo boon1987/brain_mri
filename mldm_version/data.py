@@ -29,6 +29,10 @@ class MRI_Dataset(Dataset):
         img_path = os.path.join(base_path, self.path_df.iloc[idx]['images'])
         mask_path = os.path.join(base_path, self.path_df.iloc[idx]['masks'])
         
+        print('base_path:',base_path)
+        print('img_path:',img_path)
+        print('mask_path:',mask_path)
+
         image = Image.open(img_path)
         mask = Image.open(mask_path)
         
@@ -94,9 +98,12 @@ def get_train_val_datasets(data_dir, seed, validation_ratio=0.2,
     dirs, images, masks = [], [], []
 
     for root, folders, files in  os.walk(data_dir):
+        # print(root)
+        # print(folders)
         for file in files:
             if 'mask' in file:
-                dirs.append(root.replace(data_dir, ''))
+                #dirs.append(root.replace(data_dir, ''))
+                dirs.append(root)
                 masks.append(file)
                 images.append(file.replace("_mask", ""))
                 

@@ -1,6 +1,6 @@
 name: MRI-const
 data:
-  data_dir:  '/data/kaggle_3m/'
+  data_dir:  '/run/determined/workdir/shared_fs/brain_mri_dataset'
   repo: 'mateuszbuda/brain-segmentation-pytorch'
   model: 'unet'
 hyperparameters:
@@ -34,7 +34,12 @@ resources:
   slots_per_trial: 1
 max_restarts: 0
 entrypoint: model_def:MRIUnetTrial
-bind_mounts:
-  - host_path: /mnt/efs
-    container_path: /data
-    read_only: True
+# bind_mounts:
+#   - host_path: /mnt/efs
+#     container_path: /data
+#     read_only: True
+bind_mounts: 
+  - container_path: /run/determined/workdir/shared_fs
+    host_path: /mnt/mapr_nfs/determined 
+    propagation: rprivate 
+    read_only: false 
