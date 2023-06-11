@@ -1,0 +1,57 @@
+{
+  "pipeline": {
+    "name": "brain-mri-train"
+  },
+  "description": "Detects changed files into a repository and triggers a retraining on that dataset",
+  "input": {
+    "pfs": {
+      "name": "data",
+      "repo": "brain-mri-data",
+      "branch": "master",
+      "glob": "/",
+      "empty_files": true
+    }
+  },
+  "transform": {
+    "cmd": [
+      "/bin/sh"
+    ],
+    "stdin": [
+      "python train.py --git-url https://git@github.com:/hpelabssg/pdk-use-cases.git --git-ref main --sub-dir brain-mri/experiment --config const.yaml --repo brain-mri-data --model brain-mri --project pdk-brain-mri"
+    ],
+    "image": "hpelabssg/pds:train_0.0.1",
+    "secrets": [
+      {
+        "name": "pachyderm-determined-pipeline-secret",
+        "key": "det_master",
+        "env_var": "DET_MASTER"
+      },
+      {
+        "name": "pachyderm-determined-pipeline-secret",
+        "key": "det_user",
+        "env_var": "DET_USER"
+      },
+      {
+        "name": "pachyderm-determined-pipeline-secret",
+        "key": "det_password",
+        "env_var": "DET_PASSWORD"
+      },
+      {
+        "name": "pachyderm-determined-pipeline-secret",
+        "key": "pac_token",
+        "env_var": "PAC_TOKEN"
+      },
+      {
+        "name": "pachyderm-determined-pipeline-secret",
+        "key": "pachyderm_host",
+        "env_var": "PACHD_LB_SERVICE_HOST"
+      },
+      {
+        "name": "pachyderm-determined-pipeline-secret",
+        "key": "pachyderm_port",
+        "env_var": "PACHD_LB_SERVICE_PORT"
+      }
+    ]
+  },
+  "pod_patch": "[{\"op\": \"add\",\"path\": \"/volumes/-\",\"value\": {\"name\": \"task-pv-storage\",\"persistentVolumeClaim\": {\"claimName\": \"task-det-checkpoints-pvc\"}}}, {\"op\": \"add\",\"path\": \"/containers/0/volumeMounts/-\",\"value\": {\"mountPath\": \"/determined_shared_fs\",\"name\": \"task-pv-storage\"}}]"
+}
