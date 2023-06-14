@@ -1,0 +1,83 @@
+{
+    "pipeline": {
+        "name": "brain-mri-test1_edges"
+    },
+    "description": "Perform edge detection on images.",
+    "input": {
+        "pfs": {
+            "name": "pipeline_input_data",
+            "repo": "mri_raw_data",
+            "branch": "branch_v1",
+            "glob": "/",
+            "empty_files": true
+        }
+    },
+    "transform": {
+        "cmd": [
+            "python3", "/edges.py"
+        ],
+        "stdin": [
+            "python train.py --git-url https://git@github.com:/hpelabssg/pdk-use-cases.git --git-ref main --sub-dir brain-mri/experiment --config const.yaml --repo brain-mri-data --model brain-mri --project pdk-brain-mri"
+        ],
+        "image": "pachyderm/opencv:1.0",
+        "secrets": [
+            {
+                "name": "pachyderm-determined-pipeline-secret",
+                "key": "det_master",
+                "env_var": "DET_MASTER"
+            },
+            {
+                "name": "pachyderm-determined-pipeline-secret",
+                "key": "det_user",
+                "env_var": "DET_USER"
+            },
+            {
+                "name": "pachyderm-determined-pipeline-secret",
+                "key": "det_password",
+                "env_var": "DET_PASSWORD"
+            },
+            {
+                "name": "pachyderm-determined-pipeline-secret",
+                "key": "pac_token",
+                "env_var": "PAC_TOKEN"
+            },
+            {
+                "name": "pachyderm-determined-pipeline-secret",
+                "key": "pachyderm_host",
+                "env_var": "PACHD_LB_SERVICE_HOST"
+            },
+            {
+                "name": "pachyderm-determined-pipeline-secret",
+                "key": "pachyderm_port",
+                "env_var": "PACHD_LB_SERVICE_PORT"
+            }
+        ]
+    },
+    "pod_patch": "[{\"op\": \"add\",\"path\": \"/volumes/-\",\"value\": {\"name\": \"task-pv-storage\",\"persistentVolumeClaim\": {\"claimName\": \"task-det-checkpoints-pvc\"}}}, {\"op\": \"add\",\"path\": \"/containers/0/volumeMounts/-\",\"value\": {\"mountPath\": \"/determined_shared_fs\",\"name\": \"task-pv-storage\"}}]"
+}
+
+
+// {
+//     // The `pipeline` section contains a `name` for identification; this name is also used to create a corresponding output repo.
+//     "pipeline": {
+//         "name": "edges"
+//     },
+//     "description": "A pipeline that performs image edge detection by using the OpenCV library.",
+//     // The `transform` section allows you to specify the docker `image` you want to use (`pachyderm/opencv:1.0`)and the `cmd` that defines the entry point (`edges.py`). 
+//     "transform": {
+//         "cmd": [
+//             "python3",
+//             "/edges.py"
+//         ],
+//         "image": "pachyderm/opencv:1.0"
+//     },
+//     // The input section specifies repos visible to the running pipeline, and how to process the data from the repos. 
+//     // Commits to these repos trigger the pipeline to create new processing jobs. In this case, `images` is the repo, and `/*` is the glob pattern.
+//     "input": {
+//         "pfs": {
+//             "repo": "images",
+//             // The glob pattern defines how the input data will be transformed into datum if you want to distribute computation. `/*` means that each file can be processed individually.
+//             "glob": "/*"
+//         }
+//     }
+// }
