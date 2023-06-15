@@ -9,14 +9,15 @@
             "name": "pipeline_input_data",
             "repo": "mri_raw_data",
             "branch": "branch_v1",
-            "glob": "/*/*",
+            "glob": "/",
             "empty_files": false
         }
     },
-    "autoscaling": true, 
+    "autoscaling": true,
     "parallelism_spec": {
         "constant": 8
     },
+    "reprocess_spec": "every_job",
     "transform": {
         "cmd": [
             "sh",
