@@ -19,7 +19,7 @@ counter=0
 for dirpath, dirs, files in os.walk("/pfs/pipeline_input_data"):
    #print(dirpath)
    for file in files:
-      filepath = os.join(dirpath, file)
+      filepath = os.path.join(dirpath, file)
       print(filepath)
       break
       # if counter == 10:
