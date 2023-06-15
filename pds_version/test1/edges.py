@@ -35,7 +35,8 @@ for dirpath, dirs, files in os.walk(input_data_path):
       if filepath.split(".")[-1] == "tif":
          print('process file ', filepath)
          make_edges(filepath, output_data_path)
-      counter=counter+1
+         counter=counter+1
+print("number of images being processed: ", counter)
 
 
 # with open("/pfs/pipeline_input_data/kaggle_3m_dataset/data.csv", 'r') as file:
