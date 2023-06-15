@@ -17,13 +17,14 @@ import pickle
 output_list = []
 counter=0
 for dirpath, dirs, files in os.walk("/pfs/pipeline_input_data"):
+   print(dirpath)
    for file in files:
-      if counter == 10:
-         break
+      # if counter == 10:
+      #    break
       print(file)
       output_list.append([dirpath, dirs, files])
       counter=counter+1
       #make_edges(os.path.join(dirpath, file))
       
-with open(os.path.join("/pfs/out","data.pickle"), 'wb') as f:
-   pickle.dump(output_list, f)
+# with open(os.path.join("/pfs/out","data.pickle"), 'wb') as f:
+#    pickle.dump(output_list, f)
