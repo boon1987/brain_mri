@@ -28,7 +28,7 @@ total_images=0
 for dirpath, dirs, files in os.walk(input_data_path):
    output_path = ''
    process_image_flag=False
-   #print(dirpath)
+   print(dirpath)
    for file in files:
       filepath = os.path.join(dirpath, file)
       output_list.append([filepath])
