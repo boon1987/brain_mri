@@ -27,21 +27,23 @@ counter=0
 
 for dirpath, dirs, files in os.walk(input_data_path):
    output_path = ''
+   process_image_flag=False
    #print(dirpath)
    for file in files:
       filepath = os.path.join(dirpath, file)
       output_list.append([filepath])
-      #print(filepath)
-      # if counter == 10:
-      #    break
       dirname = os.path.split(dirpath)[1]
       output_path = os.path.join(output_data_path, dirname)
       os.makedirs(output_path, exist_ok=True)
       if filepath.split(".")[-1] == "tif":
-         #print('process file ', filepath)
          make_edges(filepath, output_path)
-         counter=counter+1
+         process_image_flag=True
    print(output_path)
+   
+   if process_image_flag==True:
+      counter=counter+1
+   if counter==20:
+      break
 print("number of images being processed: ", counter)
 
 
