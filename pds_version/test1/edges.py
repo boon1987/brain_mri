@@ -24,7 +24,9 @@ def make_edges(image, output_data_path):
 # walk /pfs/pipeline_input_data and call make_edges on every file found
 output_list = []
 counter=0
+
 for dirpath, dirs, files in os.walk(input_data_path):
+   output_path = ''
    #print(dirpath)
    for file in files:
       filepath = os.path.join(dirpath, file)
@@ -34,6 +36,7 @@ for dirpath, dirs, files in os.walk(input_data_path):
       #    break
       dirname = os.path.split(dirpath)[1]
       output_path = os.path.join(output_data_path, dirname)
+      os.makedirs(output_path, exist_ok=True)
       if filepath.split(".")[-1] == "tif":
          #print('process file ', filepath)
          #make_edges(filepath, output_path)

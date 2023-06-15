@@ -1,6 +1,6 @@
 {
     "pipeline": {
-        "name": "brain-mri-test1_edges10"
+        "name": "brain-mri-test1_edges11"
     },
     "description": "Perform edge detection on images.",
     "output_branch": "branch_v1",
@@ -14,7 +14,7 @@
         }
     },
     "transform": {
-        "cmd": ["sh", "-c", "git clone https://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@github.com/boon1987/brain_mri.git /code && ls /code && python3 /code/pds_version/test1/edges.py && rm -rf /code"],
+        "cmd": ["sh", "-c", "git clone https://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@github.com/boon1987/brain_mri.git /code && python3 /code/pds_version/test1/edges.py && rm -rf /code"],
         "image": "pachyderm/opencv:1.0",
         "stdin": ["cat /code/pds_version/test1/edges.py"],
         "secrets": [
