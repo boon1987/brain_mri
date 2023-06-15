@@ -9,11 +9,11 @@ import pickle
 # make_edges reads an image from /pfs/images and outputs the result of running
 # edge detection on that image to /pfs/out. Note that /pfs/images and
 # /pfs/out are special directories that Pachyderm injects into the container.
-# def make_edges(image):
-#    img = cv2.imread(image)
-#    tail = os.path.split(image)[1]
-#    edges = cv2.Canny(img,100,200)
-#    plt.imsave(os.path.join("/pfs/out", os.path.splitext(tail)[0]+'.png'), edges, cmap = 'gray')
+def make_edges(image):
+   img = cv2.imread(image)
+   tail = os.path.split(image)[1]
+   edges = cv2.Canny(img,100,200)
+   plt.imsave(os.path.join("/pfs/out", os.path.splitext(tail)[0]+'.png'), edges, cmap = 'gray')
 
 # walk /pfs/pipeline_input_data and call make_edges on every file found
 output_list = []
@@ -26,7 +26,9 @@ for dirpath, dirs, files in os.walk("/pfs/pipeline_input_data"):
       #print(filepath)
       # if counter == 10:
       #    break
-      #make_edges(os.path.join(dirpath, file))
+      if filepath.split(".")[-1] == "tif":
+         print('process file ', filepath)
+         make_edges(filepath)
       counter=counter+1
 
 # with open("/pfs/pipeline_input_data/kaggle_3m_dataset/data.csv", 'r') as file:
