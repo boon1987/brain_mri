@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import pandas as pd
 from matplotlib import pyplot as plt
 import os
 import pickle
@@ -28,6 +29,8 @@ for dirpath, dirs, files in os.walk("/pfs/pipeline_input_data"):
       output_list.append([dirpath, dirs, files])
       counter=counter+1
       #make_edges(os.path.join(dirpath, file))
-      
+
+df = pd.read_csv("/pfs/pipeline_input_data/kaggle_3m_dataset/data.csv")
+print(df.head())
 # with open(os.path.join("/pfs/out","data.pickle"), 'wb') as f:
 #    pickle.dump(output_list, f)
