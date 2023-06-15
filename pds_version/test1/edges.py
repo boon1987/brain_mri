@@ -16,7 +16,7 @@ os.makedirs(output_data_path, exist_ok=True)
 def make_edges(image, output_data_path):
    img = cv2.imread(image)
    edges = cv2.Canny(img,100,200)
-   edges = cv2.resize(edges, (edges.shape[1]*3, edges.shape[0]*3))
+   edges = cv2.resize(edges, (edges.shape[1]*4, edges.shape[0]*4))
    tail = os.path.split(image)[1]
    plt.imsave(os.path.join(output_data_path, os.path.splitext(tail)[0]+'.png'), edges, cmap = 'gray')
 
@@ -39,7 +39,7 @@ for dirpath, dirs, files in os.walk(input_data_path):
       os.makedirs(output_path, exist_ok=True)
       if filepath.split(".")[-1] == "tif":
          #print('process file ', filepath)
-         #make_edges(filepath, output_path)
+         make_edges(filepath, output_path)
          counter=counter+1
    print(output_path)
 print("number of images being processed: ", counter)

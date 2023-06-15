@@ -13,8 +13,9 @@
             "empty_files": false
         }
     },
+    "autoscaling": true, 
     "parallelism_spec": {
-        "constant": 3
+        "constant": 8
     },
     "transform": {
         "cmd": [
