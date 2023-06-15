@@ -22,7 +22,7 @@ for dirpath, dirs, files in os.walk("/pfs/pipeline_input_data"):
    #print(dirpath)
    for file in files:
       filepath = os.path.join(dirpath, file)
-      output_list.append([dirpath, dirs, files])
+      output_list.append([filepath])
       #print(filepath)
       # if counter == 10:
       #    break
