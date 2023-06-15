@@ -12,12 +12,14 @@ pach_std_output_path = "pfs/out"
 output_data_path = os.path.join(pach_std_output_path, "mri_edges")
 os.makedirs(output_data_path, exist_ok=True)
 
+
 def make_edges(image, output_data_path):
    img = cv2.imread(image)
-   img = cv2.resize(img, (img.shape[1]*10, img.shape[0]*10))
    edges = cv2.Canny(img,100,200)
+   edges = cv2.resize(edges, (edges.shape[1]*4, edges.shape[0]*4))
    tail = os.path.split(image)[1]
    plt.imsave(os.path.join(output_data_path, os.path.splitext(tail)[0]+'.png'), edges, cmap = 'gray')
+
 
 # walk /pfs/pipeline_input_data and call make_edges on every file found
 output_list = []
@@ -35,15 +37,17 @@ for dirpath, dirs, files in os.walk(input_data_path):
          make_edges(filepath, output_data_path)
       counter=counter+1
 
+
 # with open("/pfs/pipeline_input_data/kaggle_3m_dataset/data.csv", 'r') as file:
 #   csvreader = csv.reader(file)
 #   for row in csvreader:
 #     print(row)
     
+    
 # df = pd.read_csv("/pfs/pipeline_input_data/kaggle_3m_dataset/data.csv")
 # print(df.head())
-with open(os.path.join(output_data_path,"data.pickle"), 'wb') as f:
-   pickle.dump(output_list, f)
+# with open(os.path.join(output_data_path,"data.pickle"), 'wb') as f:
+#    pickle.dump(output_list, f)
    
 with open(os.path.join(pach_std_output_path,"data.pickle"), 'wb') as f:
    pickle.dump(output_list, f)
