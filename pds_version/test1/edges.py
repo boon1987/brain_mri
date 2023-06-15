@@ -24,7 +24,7 @@ def make_edges(image, output_data_path):
 # walk /pfs/pipeline_input_data and call make_edges on every file found
 output_list = []
 counter=0
-
+total_images=0
 for dirpath, dirs, files in os.walk(input_data_path):
    output_path = ''
    process_image_flag=False
@@ -38,13 +38,13 @@ for dirpath, dirs, files in os.walk(input_data_path):
       if filepath.split(".")[-1] == "tif":
          make_edges(filepath, output_path)
          process_image_flag=True
+         total_images = total_images + 1
    print(output_path)
-   
    if process_image_flag==True:
       counter=counter+1
-   if counter==20:
+   if counter==24:
       break
-print("number of images being processed: ", counter)
+print("number of images being processed: ", total_images)
 
 
 # with open("/pfs/pipeline_input_data/kaggle_3m_dataset/data.csv", 'r') as file:
