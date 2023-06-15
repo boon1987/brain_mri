@@ -1,4 +1,5 @@
 import cv2
+import csv
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
@@ -21,7 +22,7 @@ for dirpath, dirs, files in os.walk("/pfs/pipeline_input_data"):
    #print(dirpath)
    for file in files:
       filepath = os.path.join(dirpath, file)
-      print(filepath)
+      #print(filepath)
       break
       # if counter == 10:
       #    break
@@ -30,7 +31,12 @@ for dirpath, dirs, files in os.walk("/pfs/pipeline_input_data"):
       counter=counter+1
       #make_edges(os.path.join(dirpath, file))
 
-df = pd.read_csv("/pfs/pipeline_input_data/kaggle_3m_dataset/data.csv")
-print(df.head())
+with open("/pfs/pipeline_input_data/kaggle_3m_dataset/data.csv", 'r') as file:
+  csvreader = csv.reader(file)
+  for row in csvreader:
+    print(row)
+    
+# df = pd.read_csv("/pfs/pipeline_input_data/kaggle_3m_dataset/data.csv")
+# print(df.head())
 # with open(os.path.join("/pfs/out","data.pickle"), 'wb') as f:
 #    pickle.dump(output_list, f)
