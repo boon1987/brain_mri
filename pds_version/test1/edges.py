@@ -56,5 +56,5 @@ print("number of images being processed: ", counter)
 # with open(os.path.join(output_data_path,"data.pickle"), 'wb') as f:
 #    pickle.dump(output_list, f)
    
-with open(os.path.join(pach_std_output_path,"data.pickle"), 'wb') as f:
-   pickle.dump(output_list, f)
+# with open(os.path.join(pach_std_output_path,"data.pickle"), 'wb') as f:
+#    pickle.dump(output_list, f)
