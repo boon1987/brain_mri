@@ -44,7 +44,7 @@ for dirpath, dirs, files in os.walk(input_data_path):
    # this "break" code is useful only when all directories are viewed as single datum. It does not work when every directory is viewd as independent datum.
    if process_image_flag==True:
       counter=counter+1
-   if counter==6:
+   if counter==10:
       break
 print("number of images being processed: ", total_images)
 
