@@ -1,8 +1,9 @@
 {
     "pipeline": {
-        "name": "brain-mri-test1_edges1"
+        "name": "brain-mri-test1_edges2"
     },
     "description": "Perform edge detection on images.",
+    "output_branch": "branch_v1",
     "input": {
         "pfs": {
             "name": "pipeline_input_data",

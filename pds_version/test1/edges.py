@@ -22,21 +22,19 @@ for dirpath, dirs, files in os.walk("/pfs/pipeline_input_data"):
    #print(dirpath)
    for file in files:
       filepath = os.path.join(dirpath, file)
+      output_list.append([dirpath, dirs, files])
       #print(filepath)
-      break
       # if counter == 10:
       #    break
-      print(file)
-      output_list.append([dirpath, dirs, files])
-      counter=counter+1
       #make_edges(os.path.join(dirpath, file))
+      counter=counter+1
 
-with open("/pfs/pipeline_input_data/kaggle_3m_dataset/data.csv", 'r') as file:
-  csvreader = csv.reader(file)
-  for row in csvreader:
-    print(row)
+# with open("/pfs/pipeline_input_data/kaggle_3m_dataset/data.csv", 'r') as file:
+#   csvreader = csv.reader(file)
+#   for row in csvreader:
+#     print(row)
     
 # df = pd.read_csv("/pfs/pipeline_input_data/kaggle_3m_dataset/data.csv")
 # print(df.head())
-# with open(os.path.join("/pfs/out","data.pickle"), 'wb') as f:
-#    pickle.dump(output_list, f)
+with open(os.path.join("/pfs/out","data.pickle"), 'wb') as f:
+   pickle.dump(output_list, f)
