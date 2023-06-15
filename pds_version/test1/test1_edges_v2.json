@@ -1,6 +1,6 @@
 {
     "pipeline": {
-        "name": "brain-mri-test1_edges9"
+        "name": "brain-mri-test1_edges10"
     },
     "description": "Perform edge detection on images.",
     "output_branch": "branch_v1",
@@ -9,7 +9,7 @@
             "name": "pipeline_input_data",
             "repo": "mri_raw_data",
             "branch": "branch_v1",
-            "glob": "/",
+            "glob": "/*/*",
             "empty_files": false
         }
     },
