@@ -1,7 +1,7 @@
 import cv2
 import csv
 import numpy as np
-import pandas as pd
+#import pandas as pd
 from matplotlib import pyplot as plt
 import os
 import pickle
@@ -15,7 +15,7 @@ import pickle
 #    edges = cv2.Canny(img,100,200)
 #    plt.imsave(os.path.join("/pfs/out", os.path.splitext(tail)[0]+'.png'), edges, cmap = 'gray')
 
-# walk /pfs/images and call make_edges on every file found
+# walk /pfs/pipeline_input_data and call make_edges on every file found
 output_list = []
 counter=0
 for dirpath, dirs, files in os.walk("/pfs/pipeline_input_data"):
