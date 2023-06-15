@@ -1,6 +1,6 @@
 {
     "pipeline": {
-        "name": "brain-mri-test1_edges4"
+        "name": "brain-mri-test1_edges5"
     },
     "description": "Perform edge detection on images.",
     "output_branch": "branch_v1",

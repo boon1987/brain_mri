@@ -10,6 +10,7 @@ import pickle
 input_data_path = "/pfs/pipeline_input_data"
 pach_std_output_path = "pfs/out"
 output_data_path = os.path.join(pach_std_output_path, "mri_edges")
+os.makedirs(output_data_path, exist_ok=True)
 
 def make_edges(image, output_data_path):
    img = cv2.imread(image)
