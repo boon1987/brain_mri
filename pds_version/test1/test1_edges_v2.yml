@@ -1,0 +1,49 @@
+pipeline:
+    name: brain-mri-test1_edges11                  # pipeline name
+description: Perform edge detection on images.     # pipeline description
+output_branch: branch_v1                           # branch name of the output commit
+input:
+    pfs:
+        name: pipeline_input_data                  # Replace repo@branch with this name. Both paths "pfs/pipeline_input_data" & "pfs/out" are mounted on the k8s pod container.
+        repo: mri_raw_data
+        branch: branch_v1                          # specify which branch of the repo as the input to the pipeline during executing the job/datum.
+        glob: /                                    # specify the datum shape, which in turn affect the data parallelism.
+        empty_files: false                         # ?
+autoscaling: true                                  # automatic scale-up and scale-down number of the workers, with maximum specified by "parallelism_spec".
+parallelism_spec:
+    constant: 8
+reprocess_spec: every_job                          # reprocess every datum even the input datums have not change. Another value is "until_success"
+transform:
+    cmd:                                           # the cmd is repeatedly executed for every datum under the same job.
+        - sh
+        - '-c'
+        - 'git clone https://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@github.com/boon1987/brain_mri.git /code && python3 /code/pds_version/test1/edges.py && rm -rf /code'
+    image: 'pachyderm/opencv:1.0'                  # image to be run
+    stdin:
+        - cat /code/pds_version/test1/edges.py
+    secrets:
+        - 
+            name: pachyderm-determined-pipeline-secret
+            key: det_master
+            env_var: DET_MASTER
+        - 
+            name: pachyderm-determined-pipeline-secret
+            key: det_user
+            env_var: DET_USER
+        - 
+            name: pachyderm-determined-pipeline-secret
+            key: det_password
+            env_var: DET_PASSWORD
+        - 
+            name: pachyderm-determined-pipeline-secret
+            key: pac_token
+            env_var: PAC_TOKEN
+        - 
+            name: pachyderm-determined-pipeline-secret
+            key: pachyderm_host
+            env_var: PACHD_LB_SERVICE_HOST
+        - 
+            name: pachyderm-determined-pipeline-secret
+            key: pachyderm_port
+            env_var: PACHD_LB_SERVICE_PORT
+pod_patch: '[{"op": "add","path": "/volumes/-","value": {"name": "task-pv-storage","persistentVolumeClaim": {"claimName": "task-det-checkpoints-pvc"}}}, {"op": "add","path": "/containers/0/volumeMounts/-","value": {"mountPath": "/determined_shared_fs","name": "task-pv-storage"}}]'
