@@ -13,7 +13,7 @@
         }
     },
     "transform": {
-        "cmd": ["sh", "-c", "git clone https://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@github.com/boon1987/brain_mri.git /code && ls /code"],
+        "cmd": ["sh", "-c", "git clone https://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@github.com/boon1987/brain_mri.git /code && ls /code && python3 /code/pds_version/test1/edges.py"],
         "image": "pachyderm/opencv:1.0",
         "secrets": [
             {
