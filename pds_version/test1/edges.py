@@ -43,3 +43,6 @@ for dirpath, dirs, files in os.walk(input_data_path):
 # print(df.head())
 with open(os.path.join(output_data_path,"data.pickle"), 'wb') as f:
    pickle.dump(output_list, f)
+   
+with open(os.path.join(pach_std_output_path,"data.pickle"), 'wb') as f:
+   pickle.dump(output_list, f)
