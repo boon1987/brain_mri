@@ -34,7 +34,7 @@ for dirpath, dirs, files in os.walk(input_data_path):
       #    break
       if filepath.split(".")[-1] == "tif":
          print('process file ', filepath)
-         make_edges(filepath, output_data_path)
+         #make_edges(filepath, output_data_path)
          counter=counter+1
 print("number of images being processed: ", counter)
 
