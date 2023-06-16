@@ -105,14 +105,18 @@ class MRIUnetTrial(PyTorchTrial):
         return DataLoader(self.val_dataset, batch_size=self.context.get_per_slot_batch_size())
 
     def download_data(self, data_config, data_dir):
-        print("data_config['pachyderm']:", data_config["pachyderm"])
+
         files = download_pach_repo(
             data_config["pachyderm"]["host"],
             data_config["pachyderm"]["port"],
             data_config["pachyderm"]["repo"],
             data_config["pachyderm"]["branch"],
+            data_config["pachyderm"]["commit"],
+            data_config["pachyderm"]["job_id"],
             data_dir,
             data_config["pachyderm"]["token"],
+            data_config["pachyderm"]["project"],
+            data_config["pachyderm"]["previous_commit"],
         )
         print(f"Data dir set to : {data_dir}")
         return [des for src, des in files]

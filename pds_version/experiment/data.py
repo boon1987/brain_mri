@@ -15,6 +15,7 @@ from sklearn.model_selection import train_test_split
 import shutil
 
 import python_pachyderm
+from python_pachyderm.pfs import Commit
 from python_pachyderm.proto.v2.pfs.pfs_pb2 import FileType
 import torch
 from PIL import Image
@@ -97,44 +98,70 @@ def get_train_val_datasets(download_dir, data_dir, seed, validation_ratio=0.2):
 
 
 # ======================================================================================================================
+def safe_open_wb(path):
+    ''' Open "path" for writing, creating any parent directories as needed.
+    '''
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    return open(path, 'wb')
 
-def download_pach_repo(pachyderm_host, pachyderm_port, repo, branch, root, token):
-    print(f'Starting to download dataset: {repo}@{branch} --> {root}')
+
+def download_pach_repo(
+    pachyderm_host,
+    pachyderm_port,
+    repo,
+    branch,
+    commit, 
+    job_id, 
+    root,
+    token,
+    project="default",
+    previous_commit=None,
+):
+    print(f"Starting to download dataset: {repo}@{branch} --> {root}")
 
     if not os.path.exists(root):
         os.makedirs(root)
-    
-    client = python_pachyderm.Client(host=pachyderm_host, port=pachyderm_port, auth_token=token)
-    files  = []
-    
-    print("os.environ: ", os.environ)
-    print("client.address: ", client.address)
-    print("client.auth_token: ", client.auth_token)
 
-    print('debug1')
-    for diff in client.diff_file((repo, branch), "/"):
-        src_path = diff.new_file.file.path
-        des_path = os.path.join(root, src_path[1:])
-        # print(f"Got src='{src_path}', des='{des_path}'")
+    client = python_pachyderm.Client(
+        host=pachyderm_host, port=pachyderm_port, auth_token=token
+    )
+    files = []
+    if previous_commit is not None:
+        print('download_pach_repo: previous_commit is not None.')
+        for diff in client.diff_file(
+            Commit(repo=repo, id=branch, project=project), "/",
+            Commit(repo=repo, id=previous_commit, project=project),
+        ):
+            src_path = diff.new_file.file.path
+            des_path = os.path.join(root, src_path[1:])
+            print(f"Got src='{src_path}', des='{des_path}'")
 
-        if diff.new_file.file_type == FileType.FILE:
-            if src_path != "":
-                files.append( (src_path, des_path) )
-        elif diff.new_file.file_type == FileType.DIR:
-            print(f"Creating dir : {des_path}")
-            os.makedirs(des_path, exist_ok=True)
-    print('debug2')
-    
+            if diff.new_file.file_type == FileType.FILE:
+                if src_path != "":
+                    files.append((src_path, des_path))
+    else:
+        print('download_pach_repo: previous_commit is None.')
+        for file_info in client.walk_file(
+            Commit(project=project, repo=repo, branch=branch, id=commit), "/"):
+            src_path = file_info.file.path
+            des_path = os.path.join(root, src_path[1:])
+            print(f"Got src='{src_path}', des='{des_path}'")
+
+            if file_info.file_type == FileType.FILE:
+                if src_path != "":
+                    files.append((src_path, des_path))
+                    
+    print(files[0])
+    print(files[10])
+    print(files[20])
     for src_path, des_path in files:
-        src_file = client.get_file((repo, branch), src_path)
-        # print(f'Downloading {src_path} to {des_path}')
-        print('debug3')
+        src_file = client.get_file(Commit(repo=repo, id=branch, project=project), src_path)
+        print(f"Downloading {src_path} to {des_path}")
 
-        with open(des_path, "wb") as dest_file:
+        with safe_open_wb(des_path) as dest_file:
             shutil.copyfileobj(src_file, dest_file)
-    print('debug4')
 
-    print('Download operation ended')
+    print("Download operation ended")
     return files
 
 # ========================================================================================================

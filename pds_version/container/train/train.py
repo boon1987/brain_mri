@@ -45,6 +45,24 @@ def parse_args():
     )
     
     parser.add_argument(
+        "--pach_project_name",
+        type=str,
+        help="Pachyderm's project name",
+    )
+
+    parser.add_argument(
+        "--repo",
+        type=str,
+        help="Name of the Pachyderm's repository containing the dataset",
+    )
+    
+    parser.add_argument(
+        "--branch",
+        type=str,
+        help="Name of the Pachyderm's repository's branch containing the dataset",
+    )
+    
+    parser.add_argument(
         "--config",
         type=str,
         help="Determined's experiment configuration file",
@@ -69,12 +87,6 @@ def parse_args():
     )
 
     parser.add_argument(
-        "--repo",
-        type=str,
-        help="Name of the Pachyderm's repository containing the dataset",
-    )
-
-    parser.add_argument(
         "--model",
         type=str,
         help="Name of the model on DeterminedAI to create/update",
@@ -83,7 +95,7 @@ def parse_args():
     parser.add_argument(
         "--work-dir",
         type=str,
-        help="Name of the model on DeterminedAI to create/update",
+        help="Directory containing the experiment code to be submitted to DeterminedAI.",
     )
     
     return parser.parse_args()
@@ -119,23 +131,24 @@ def read_config(conf_file):
 # =====================================================================================
 
 
-def setup_config(config_file, repo, input_commit, pipeline, job_id):
+def setup_config(config_file, project, repo, branch, input_commit, pipeline, job_id):
     config = read_config(config_file)
     config["data"]["pachyderm"]["host"] = os.getenv("PACHD_LB_SERVICE_HOST")
     config["data"]["pachyderm"]["port"] = os.getenv("PACHD_LB_SERVICE_PORT")
+    config["data"]["pachyderm"]["project"] = project
     config["data"]["pachyderm"]["repo"] = repo
     #config["data"]["pachyderm"]["pipeline_input_name"]
-    config["data"]["pachyderm"]["branch"] = input_commit
+    config["data"]["pachyderm"]["branch"] = branch
+    config["data"]["pachyderm"]["commit"] = input_commit
     config["data"]["pachyderm"]["job_id"] = job_id
     config["data"]["pachyderm"]["token"] = os.getenv("PAC_TOKEN")
 
-    config["labels"] = [repo, input_commit, job_id, pipeline]
+    config["labels"] = [repo, job_id, pipeline]
 
     return config
 
 
 # =====================================================================================
-
 
 def create_client():
     return DeterminedClient(
@@ -148,20 +161,29 @@ def create_client():
 # =====================================================================================
 
 
-def execute_experiment(client, configfile, code_path, checkpoint):
+def execute_experiment(
+    client, configfile, code_path, checkpoint, pach_version=None
+):
     try:
         if checkpoint is None:
             parent_id = None
+            configfile["data"]["pachyderm"]["previous_commit"] = None
             exp = client.create_experiment(configfile, code_path)
         else:
             parent_id = checkpoint.training.experiment_id
-            exp = client.continue_experiment(configfile, parent_id, checkpoint.uuid)
+            configfile["data"]["pachyderm"]["previous_commit"] = pach_version
+            exp = client.continue_experiment(
+                configfile, parent_id, checkpoint.uuid
+            )
 
-        print(f"Created experiment with id='{exp.id}' (parent_id='{parent_id}'). Waiting for its completion...")
+        print(
+            f"Created experiment with id='{exp.id}' (parent_id='{parent_id}'). Waiting for its completion..."
+        )
 
-        # state = exp.wait()["experiment"]["state"]
         state = exp.wait()
-        print(f"Experiment with id='{exp.id}' ended with the following state: {state}")
+        print(
+            f"Experiment with id='{exp.id}' ended with the following state: {state}"
+        )
 
         if state == ExperimentState.COMPLETED:
             return exp
@@ -183,7 +205,9 @@ def run_experiment(client, configfile, code_path, model):
         return execute_experiment(client, configfile, code_path, None)
     else:
         print("Continuing experiment on DeterminedAI...")
-        return execute_experiment(client, configfile, None, version.checkpoint)
+        return execute_experiment(
+            client, configfile, None, version.checkpoint, version.name
+        )
 
 
 # =====================================================================================
@@ -200,7 +224,6 @@ def get_checkpoint(exp):
 
 
 def get_or_create_model(client, model_name, pipeline, repo):
-
     models = client.get_models(name=model_name)
 
     if len(models) > 0:
@@ -209,7 +232,9 @@ def get_or_create_model(client, model_name, pipeline, repo):
     else:
         print(f"Creating a new model : {model_name}")
         model = client.create_model(
-            name=model_name, labels=[pipeline, repo], metadata={"pipeline": pipeline, "repository": repo}
+            name=model_name,
+            labels=[pipeline, repo],
+            metadata={"pipeline": pipeline, "repository": repo},
         )
 
     return model
@@ -240,12 +265,6 @@ def write_model_info(file, model_name, model_version, pipeline, repo):
     model["pipeline"] = pipeline
     model["repo"] = repo
 
-    print("Printing model-info.......")
-    print(model_name)
-    print(model_version)
-    print(pipeline)
-    print(repo)
-
     with open(file, "w") as stream:
         try:
             yaml.safe_dump(model, stream)
@@ -267,13 +286,13 @@ def main():
     original_pachyderm_config = read_config(args.pach_config)
     input_commit_env_name = original_pachyderm_config["input"]["pfs"]["name"]+"_COMMIT"
     input_commit = os.getenv(input_commit_env_name)
-    print(f"Starting pipeline: name='{pipeline}', repo='{args.repo}', 'input_repo_commit:'{input_commit}', job_id='{job_id}'")
+    print(f"Starting pipeline: name='{pipeline}', 'project_name'='{args.pach_project_name}', repo='{args.repo}', 'input_repo_commit:'{input_commit}', job_id='{job_id}'")
 
     workdir = args.work_dir
     config_file = os.path.join(workdir, args.config)
     
     # # --- Read and setup experiment config file. Then, run experiment
-    config = setup_config(config_file, args.repo, input_commit, pipeline, job_id)
+    config = setup_config(config_file, args.pach_project_name, args.repo, args.branch, input_commit, pipeline, job_id)
     client = create_client()
     model = get_or_create_model(client, args.model, pipeline, args.repo)
     
