@@ -9,7 +9,8 @@ from data import download_pach_repo
 from determined.pytorch import DataLoader, PyTorchTrial, PyTorchTrialContext
 from torch import optim
 
-TorchData = Union[Dict[str, torch.Tensor], Sequence[torch.Tensor], torch.Tensor]
+TorchData = Union[Dict[str, torch.Tensor],
+                  Sequence[torch.Tensor], torch.Tensor]
 
 
 class MRIUnetTrial(PyTorchTrial):
@@ -23,44 +24,41 @@ class MRIUnetTrial(PyTorchTrial):
         if training:
             download_dir = self.data_config["download_directory"]
             data_dir = self.data_config["data_dir"]
-            full_dir = os.path.join(full_dir, download_dir.strip("/"), data_dir.strip("/"))
+            full_dir = os.path.join(
+                full_dir, download_dir.strip("/"), data_dir.strip("/"))
 
             des = self.download_data(self.data_config, full_dir)
 
             print("Download Directory = " + full_dir)
 
-            self.train_dataset, self.val_dataset = data.get_train_val_datasets(
-                download_dir,
-                data_dir,
-                self.context.get_hparam("split_seed"),
-                self.context.get_hparam("validation_ratio"))
-
+            self.train_dataset, self.val_dataset = data.get_train_val_datasets(download_dir,
+                                                                               data_dir,
+                                                                               self.context.get_hparam(
+                                                                                   "split_seed"),
+                                                                               self.context.get_hparam("validation_ratio"))
 
         if training:
-            try:
-                if not os.path.exists(full_dir):
-                    os.makedirs(full_dir)
+            if not os.path.exists(full_dir):
+                os.makedirs(full_dir)
 
-                with filelock.FileLock(os.path.join(full_dir, "download.lock")):
-                    model = torch.hub.load(
-                        self.data_config["repo"],
-                        self.data_config["model"],
-                        in_channels=self.context.get_hparam("input_channels"),
-                        out_channels=self.context.get_hparam("output_channels"),
-                        init_features=self.context.get_hparam("init_features"),
-                        pretrained=self.context.get_hparam("pretrained"),
-                    )
-
-                self.model = self.context.wrap_model(model)
-                self.optimizer = self.context.wrap_optimizer(
-                    optim.Adam(
-                        self.model.parameters(),
-                        lr=self.context.get_hparam("learning_rate"),
-                        weight_decay=self.context.get_hparam("weight_decay"),
-                    )
+            with filelock.FileLock(os.path.join(full_dir, "download.lock")):
+                model = torch.hub.load(
+                    self.data_config["repo"],
+                    self.data_config["model"],
+                    in_channels=self.context.get_hparam("input_channels"),
+                    out_channels=self.context.get_hparam("output_channels"),
+                    init_features=self.context.get_hparam("init_features"),
+                    pretrained=self.context.get_hparam("pretrained"),
                 )
-            except:
-                pass
+
+            self.model = self.context.wrap_model(model)
+            self.optimizer = self.context.wrap_optimizer(
+                optim.Adam(
+                    self.model.parameters(),
+                    lr=self.context.get_hparam("learning_rate"),
+                    weight_decay=self.context.get_hparam("weight_decay"),
+                )
+            )
         else:
             model = torch.hub.load(
                 self.data_config["repo"],
@@ -68,8 +66,7 @@ class MRIUnetTrial(PyTorchTrial):
                 in_channels=self.context.get_hparam("input_channels"),
                 out_channels=self.context.get_hparam("output_channels"),
                 init_features=self.context.get_hparam("init_features"),
-                pretrained=self.context.get_hparam("pretrained"),
-            )
+                pretrained=self.context.get_hparam("pretrained"))
             self.model = self.context.wrap_model(model)
 
     def iou(self, pred, label):
@@ -103,18 +100,17 @@ class MRIUnetTrial(PyTorchTrial):
 
     def download_data(self, data_config, data_dir):
 
-        files = download_pach_repo(
-            data_config["pachyderm"]["host"],
-            data_config["pachyderm"]["port"],
-            data_config["pachyderm"]["repo"],
-            data_config["pachyderm"]["branch"],
-            data_config["pachyderm"]["commit"],
-            data_config["pachyderm"]["job_id"],
-            data_dir,
-            data_config["pachyderm"]["token"],
-            data_config["pachyderm"]["project"],
-            data_config["pachyderm"]["previous_commit"],
-        )
+        files = download_pach_repo(data_config["pachyderm"]["host"],
+                                   data_config["pachyderm"]["port"],
+                                   data_config["pachyderm"]["repo"],
+                                   data_config["pachyderm"]["branch"],
+                                   data_config["pachyderm"]["commit"],
+                                   data_config["pachyderm"]["job_id"],
+                                   data_dir,
+                                   data_config["pachyderm"]["token"],
+                                   data_config["pachyderm"]["project"],
+                                   data_config["pachyderm"]["previous_commit"],
+                                   )
         print(f"Data dir set to : {data_dir}")
         return [des for src, des in files]
 

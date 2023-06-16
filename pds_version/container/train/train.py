@@ -309,13 +309,13 @@ def main():
         return
 
     # --- Now, register checkpoint on model and download it
-    # register_checkpoint(checkpoint, model, job_id)
-    # write_model_info("/pfs/out/model-info.yaml", args.model, job_id, pipeline, args.repo)
+    register_checkpoint(checkpoint, model, job_id)
+    write_model_info("/pfs/out/model-info.yaml", args.model, job_id, pipeline, args.repo)
 
-    print("workdir: ", workdir)
-    print('original pachyderm config_file: ', original_pachyderm_config)
-    print('final usable config file: ', config)
-    print(os.environ)
+    # print("workdir: ", workdir)
+    # print('original pachyderm config_file: ', original_pachyderm_config)
+    # print('final usable config file: ', config)
+    # print(os.environ)
     print(f"Ending pipeline: name='{pipeline}', repo='{args.repo}', job_id='{job_id}'")
 
 
