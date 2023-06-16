@@ -74,6 +74,12 @@ def parse_args():
         help="Name of the model on DeterminedAI to create/update",
     )
 
+    parser.add_argument(
+        "--work-dir",
+        type=str,
+        help="Name of the model on DeterminedAI to create/update",
+    )
+    
     return parser.parse_args()
 
 
@@ -263,11 +269,11 @@ def main():
     # else:
     #     workdir = local_repo
 
-    # config_file = os.path.join(workdir, args.config)
-
+    workdir = args.work_dir
+    config_file = os.path.join(workdir, args.config)
+    
     # # --- Read and setup experiment config file. Then, run experiment
-
-    # config = setup_config(config_file, args.repo, pipeline, job_id)
+    config = setup_config(config_file, args.repo, pipeline, job_id)
     # client = create_client()
     # model = get_or_create_model(client, args.model, pipeline, args.repo)
     # exp = run_experiment(client, config, workdir, model)
@@ -289,6 +295,9 @@ def main():
     # register_checkpoint(checkpoint, model, job_id)
     # write_model_info("/pfs/out/model-info.yaml", args.model, job_id, pipeline, args.repo)
 
+    print(workdir)
+    print(config_file)
+    print(config)
     print(f"Ending pipeline: name='{pipeline}', repo='{args.repo}', job_id='{job_id}'")
 
 
