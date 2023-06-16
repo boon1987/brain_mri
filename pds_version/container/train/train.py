@@ -254,8 +254,7 @@ def main():
     job_id = os.getenv("PACH_JOB_ID")
     pipeline = os.getenv("PPS_PIPELINE_NAME")
     args = parse_args()
-    input_commit = os.getenv(args.repo+"_COMMIT")
-
+    input_commit = os.getenv("mri_raw_data_COMMIT")
     print(f"Starting pipeline: name='{pipeline}', repo='{args.repo}', job_id='{job_id}'")
 
     # # --- Download code repository
@@ -300,6 +299,7 @@ def main():
     print(config_file)
     print(config)
     print("input_commit: ",args.repo+"_COMMIT:", input_commit)
+    print(os.environ)
     print(f"Ending pipeline: name='{pipeline}', repo='{args.repo}', job_id='{job_id}'")
 
 
