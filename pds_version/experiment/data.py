@@ -153,13 +153,13 @@ def download_pach_repo(
     counter=0
     for src_path, des_path in files:
         src_file = client.get_file(Commit(repo=repo, id=branch, project=project), src_path)
-        print(f"Downloading {src_path} to {des_path}")
+        print(counter, ":", f"Downloading {src_path} to {des_path}")
 
         with safe_open_wb(des_path) as dest_file:
             shutil.copyfileobj(src_file, dest_file)
-        
-        if counter==500:
-            break
+                
+        # if counter==500:
+        #     break
         counter=counter+1
         
 
