@@ -119,16 +119,17 @@ def read_config(conf_file):
 # =====================================================================================
 
 
-def setup_config(config_file, repo, pipeline, job_id):
+def setup_config(config_file, repo, input_commit, pipeline, job_id):
     config = read_config(config_file)
     config["data"]["pachyderm"]["host"] = os.getenv("PACHD_LB_SERVICE_HOST")
     config["data"]["pachyderm"]["port"] = os.getenv("PACHD_LB_SERVICE_PORT")
     config["data"]["pachyderm"]["repo"] = repo
     #config["data"]["pachyderm"]["pipeline_input_name"]
-    config["data"]["pachyderm"]["branch"] = job_id
+    config["data"]["pachyderm"]["branch"] = input_commit
+    config["data"]["pachyderm"]["job_id"] = job_id
     config["data"]["pachyderm"]["token"] = os.getenv("PAC_TOKEN")
 
-    config["labels"] = [repo, job_id, pipeline]
+    config["labels"] = [repo, input_commit, job_id, pipeline]
 
     return config
 
@@ -272,25 +273,23 @@ def main():
     config_file = os.path.join(workdir, args.config)
     
     # # --- Read and setup experiment config file. Then, run experiment
-    config = setup_config(config_file, args.repo, pipeline, job_id)
+    config = setup_config(config_file, args.repo, input_commit, pipeline, job_id)
     client = create_client()
     model = get_or_create_model(client, args.model, pipeline, args.repo)
-    #exp = run_experiment(client, config, workdir, model)
+    
+    # Submit experiment to mldm platform and return the experiment metadata
+    exp = run_experiment(client, config, workdir, model)
+    if exp is None:
+        print("Aborting pipeline as experiment did not succeed")
+        return
 
-    # if exp is None:
-    #     print("Aborting pipeline as experiment did not succeed")
-    #     return
+    # --- Get best checkpoint from experiment. It may not exist if the experiment did not succeed
+    checkpoint = get_checkpoint(exp)
+    if checkpoint is None:
+        print("No checkpoint found (probably there was no data). Aborting pipeline")
+        return
 
-    # # --- Get best checkpoint from experiment. It may not exist if the experiment did not succeed
-
-    # checkpoint = get_checkpoint(exp)
-
-    # if checkpoint is None:
-    #     print("No checkpoint found (probably there was no data). Aborting pipeline")
-    #     return
-
-    # # --- Now, register checkpoint on model and download it
-
+    # --- Now, register checkpoint on model and download it
     # register_checkpoint(checkpoint, model, job_id)
     # write_model_info("/pfs/out/model-info.yaml", args.model, job_id, pipeline, args.repo)
 
