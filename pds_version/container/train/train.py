@@ -257,7 +257,10 @@ def main():
     args = parse_args()
     
     original_pachyderm_config = read_config("/code/pds_version/pipelines/training-pipeline.yml")
-    print(original_pachyderm_config.input.pfs.name+"_COMMIT")
+    print('original pachyderm config_file: ', original_pachyderm_config)
+
+    print(original_pachyderm_config["input"]["pfs"]["name"]+"_COMMIT")
+
     input_commit = os.getenv(original_pachyderm_config.input.pfs.name+"_COMMIT")
     
     print(f"Starting pipeline: name='{pipeline}', repo='{args.repo}', job_id='{job_id}'")
