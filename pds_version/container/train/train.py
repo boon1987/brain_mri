@@ -286,7 +286,7 @@ def main():
     original_pachyderm_config = read_config(args.pach_config)
     input_commit_env_name = original_pachyderm_config["input"]["pfs"]["name"]+"_COMMIT"
     input_commit = os.getenv(input_commit_env_name)
-    print(f"Starting pipeline: name='{pipeline}', 'project_name'='{args.pach_project_name}', repo='{args.repo}', 'input_repo_commit:'{input_commit}', job_id='{job_id}'")
+    print(f"Starting pipeline: name='{pipeline}', 'project_name'='{args.pach_project_name}', repo='{args.repo}', 'branch='{args.branch}, 'input_repo_commit:'{input_commit}', job_id='{job_id}'")
 
     workdir = args.work_dir
     config_file = os.path.join(workdir, args.config)
