@@ -299,7 +299,7 @@ def main():
     print(workdir)
     print(config_file)
     print(config)
-    print("input_commit: ",input_commit)
+    print("input_commit: ",args.repo+"_COMMIT:", input_commit)
     print(f"Ending pipeline: name='{pipeline}', repo='{args.repo}', job_id='{job_id}'")
 
 
