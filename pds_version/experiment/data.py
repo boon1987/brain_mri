@@ -106,6 +106,9 @@ def download_pach_repo(pachyderm_host, pachyderm_port, repo, branch, root, token
     
     client = python_pachyderm.Client(host=pachyderm_host, port=pachyderm_port, auth_token=token)
     files  = []
+    
+    print("client.address: ", client.address)
+    print("client.auth_token: ", client.auth_token)
 
     print('debug1')
     for diff in client.diff_file((repo, branch), "/"):
