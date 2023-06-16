@@ -297,7 +297,6 @@ def main():
     print("workdir: ", workdir)
     print('original pachyderm config_file: ', original_pachyderm_config)
     print('final usable config file: ', config)
-    print("input_commit: ",args.repo+"_COMMIT:", input_commit)
     print(os.environ)
     print(f"Ending pipeline: name='{pipeline}', repo='{args.repo}', job_id='{job_id}'")
 
