@@ -276,8 +276,6 @@ def main():
     config = setup_config(config_file, args.repo, pipeline, job_id)
     client = create_client()
     model = get_or_create_model(client, args.model, pipeline, args.repo)
-    print("client:", client)
-    print("model: ", model)
     exp = run_experiment(client, config, workdir, model)
 
     # if exp is None:
