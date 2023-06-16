@@ -141,6 +141,7 @@ def download_pach_repo(
                     files.append((src_path, des_path))
     else:
         print('download_pach_repo: previous_commit is None.')
+        print(project, repo, branch, commit)
         for file_info in client.walk_file(Commit(project=project, repo=repo, branch=branch, id=commit), "/"):
             print('file_info:', file_info)
             src_path = file_info.file.path
