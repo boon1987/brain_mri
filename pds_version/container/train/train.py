@@ -262,23 +262,11 @@ def main():
     pipeline = os.getenv("PPS_PIPELINE_NAME")
     args = parse_args()
     
+    # Extract latest commit
     original_pachyderm_config = read_config(args.pach_config)
     input_commit_env_name = original_pachyderm_config["input"]["pfs"]["name"]+"_COMMIT"
     input_commit = os.getenv(input_commit_env_name)
-    
-    print(f"Starting pipeline: name='{pipeline}', repo='{args.repo}', job_id='{job_id}'")
-
-    # # --- Download code repository
-
-    # local_repo = os.path.join(os.getcwd(), "code-repository")
-    # clone_code(args.git_url, args.git_ref, local_repo)
-
-    # # --- Points to the correct subfolder inside the cloned repo
-
-    # if args.sub_dir:
-    #     workdir = os.path.join(local_repo, args.sub_dir)
-    # else:
-    #     workdir = local_repo
+    print(f"Starting pipeline: name='{pipeline}', repo='{args.repo}', 'input_repo_commit:'{input_commit}', job_id='{job_id}'")
 
     workdir = args.work_dir
     config_file = os.path.join(workdir, args.config)
