@@ -122,9 +122,7 @@ def download_pach_repo(
     if not os.path.exists(root):
         os.makedirs(root)
 
-    client = python_pachyderm.Client(
-        host=pachyderm_host, port=pachyderm_port, auth_token=token
-    )
+    client = python_pachyderm.Client(host=pachyderm_host, port=pachyderm_port, auth_token=token)
     files = []
     if previous_commit is not None:
         print('download_pach_repo: previous_commit is not None.')
@@ -143,7 +141,6 @@ def download_pach_repo(
         print('download_pach_repo: previous_commit is None.')
         print(project, repo, branch, commit)
         for file_info in client.walk_file(Commit(project=project, repo=repo, branch=branch, id=commit), "/"):
-            print('file_info:', file_info)
             src_path = file_info.file.path
             des_path = os.path.join(root, src_path[1:])
             print(f"Got src='{src_path}', des='{des_path}'")
