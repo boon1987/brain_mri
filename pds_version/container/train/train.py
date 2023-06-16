@@ -253,6 +253,7 @@ def main():
 
     job_id = os.getenv("PACH_JOB_ID")
     pipeline = os.getenv("PPS_PIPELINE_NAME")
+    input_commit = os.getenv(args.repo+"_COMMIT")
     args = parse_args()
 
     print(f"Starting pipeline: name='{pipeline}', repo='{args.repo}', job_id='{job_id}'")
@@ -276,7 +277,7 @@ def main():
     config = setup_config(config_file, args.repo, pipeline, job_id)
     client = create_client()
     model = get_or_create_model(client, args.model, pipeline, args.repo)
-    exp = run_experiment(client, config, workdir, model)
+    #exp = run_experiment(client, config, workdir, model)
 
     # if exp is None:
     #     print("Aborting pipeline as experiment did not succeed")
@@ -298,6 +299,7 @@ def main():
     print(workdir)
     print(config_file)
     print(config)
+    print("input_commit: ",input_commit)
     print(f"Ending pipeline: name='{pipeline}', repo='{args.repo}', job_id='{job_id}'")
 
 
