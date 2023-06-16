@@ -253,8 +253,8 @@ def main():
 
     job_id = os.getenv("PACH_JOB_ID")
     pipeline = os.getenv("PPS_PIPELINE_NAME")
-    input_commit = os.getenv(args.repo+"_COMMIT")
     args = parse_args()
+    input_commit = os.getenv(args.repo+"_COMMIT")
 
     print(f"Starting pipeline: name='{pipeline}', repo='{args.repo}', job_id='{job_id}'")
 
