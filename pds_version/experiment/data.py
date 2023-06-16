@@ -129,7 +129,7 @@ def download_pach_repo(
     if previous_commit is not None:
         print('download_pach_repo: previous_commit is not None.')
         for diff in client.diff_file(
-            Commit(repo=repo, id=branch, project=project), "/",
+            Commit(repo=repo, id=job_id, project=project), "/",
             Commit(repo=repo, id=previous_commit, project=project),
         ):
             src_path = diff.new_file.file.path
