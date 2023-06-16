@@ -145,21 +145,23 @@ def download_pach_repo(
         for file_info in client.walk_file(commit_object, "/"):
             src_path = file_info.file.path
             des_path = os.path.join(root, src_path[1:])
-            print(f"Got src='{src_path}', des='{des_path}'")
-
             if file_info.file_type == FileType.FILE:
                 if src_path != "":
                     files.append((src_path, des_path))
                     
-    print(files[0])
-    print(files[10])
-    print(files[20])
+
+    counter=0
     for src_path, des_path in files:
         src_file = client.get_file(Commit(repo=repo, id=branch, project=project), src_path)
         print(f"Downloading {src_path} to {des_path}")
 
         with safe_open_wb(des_path) as dest_file:
             shutil.copyfileobj(src_file, dest_file)
+        
+        if counter==500:
+            break
+        counter=counter+1
+        
 
     print("Download operation ended")
     return files
