@@ -263,7 +263,7 @@ def main():
     pipeline = os.getenv("PPS_PIPELINE_NAME")
     args = parse_args()
     
-    # Extract latest commit
+    # Use latest commit from pachyderm pipeline input data repo
     original_pachyderm_config = read_config(args.pach_config)
     input_commit_env_name = original_pachyderm_config["input"]["pfs"]["name"]+"_COMMIT"
     input_commit = os.getenv(input_commit_env_name)
