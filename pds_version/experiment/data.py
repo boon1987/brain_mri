@@ -107,6 +107,7 @@ def download_pach_repo(pachyderm_host, pachyderm_port, repo, branch, root, token
     client = python_pachyderm.Client(host=pachyderm_host, port=pachyderm_port, auth_token=token)
     files  = []
 
+    print('debug1')
     for diff in client.diff_file((repo, branch), "/"):
         src_path = diff.new_file.file.path
         des_path = os.path.join(root, src_path[1:])
@@ -118,13 +119,16 @@ def download_pach_repo(pachyderm_host, pachyderm_port, repo, branch, root, token
         elif diff.new_file.file_type == FileType.DIR:
             print(f"Creating dir : {des_path}")
             os.makedirs(des_path, exist_ok=True)
-
+    print('debug2')
+    
     for src_path, des_path in files:
         src_file = client.get_file((repo, branch), src_path)
         # print(f'Downloading {src_path} to {des_path}')
+        print('debug3')
 
         with open(des_path, "wb") as dest_file:
             shutil.copyfileobj(src_file, dest_file)
+    print('debug4')
 
     print('Download operation ended')
     return files
