@@ -39,6 +39,12 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Determined AI Experiment Runner")
 
     parser.add_argument(
+        "--pach_config",
+        type=str,
+        help="Pachyderm's configuration file",
+    )
+    
+    parser.add_argument(
         "--config",
         type=str,
         help="Determined's experiment configuration file",
@@ -256,12 +262,9 @@ def main():
     pipeline = os.getenv("PPS_PIPELINE_NAME")
     args = parse_args()
     
-    original_pachyderm_config = read_config("/code/pds_version/pipelines/training-pipeline.yml")
-    print('original pachyderm config_file: ', original_pachyderm_config)
-
-    print(original_pachyderm_config["input"]["pfs"]["name"]+"_COMMIT")
-
-    input_commit = os.getenv(original_pachyderm_config.input.pfs.name+"_COMMIT")
+    original_pachyderm_config = read_config(args.pach_config)
+    input_commit_env_name = original_pachyderm_config["input"]["pfs"]["name"]+"_COMMIT"
+    input_commit = os.getenv(input_commit_env_name)
     
     print(f"Starting pipeline: name='{pipeline}', repo='{args.repo}', job_id='{job_id}'")
 

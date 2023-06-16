@@ -13,7 +13,7 @@ transform:
   cmd: # the cmd is repeatedly executed for every datum under the same job.
     - sh
     - "-c"
-    - "git clone https://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@github.com/boon1987/brain_mri.git /code && python3 /code/pds_version/container/train/train.py --git-url https://git@github.com:/hpelabssg/pdk-use-cases.git --git-ref main --sub-dir brain-mri/experiment --config const.yaml --repo mri_raw_data --model brain-mri --work-dir /code/pds_version/experiment && rm -rf /code"  #cmd:
+    - "git clone https://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@github.com/boon1987/brain_mri.git /code && python3 /code/pds_version/container/train/train.py --git-url https://git@github.com:/hpelabssg/pdk-use-cases.git --git-ref main --sub-dir brain-mri/experiment --pach_config '/code/pds_version/pipelines/training-pipeline.yml' --config const.yaml --repo mri_raw_data --model brain-mri --work-dir /code/pds_version/experiment && rm -rf /code"  #cmd:
   #    - /bin/sh
   #stdin:
   #    - 'python train.py --git-url https://git@github.com:/hpelabssg/pdk-use-cases.git --git-ref main --sub-dir brain-mri/experiment --config const.yaml --repo brain-mri-data --model brain-mri --project pdk-brain-mri'
