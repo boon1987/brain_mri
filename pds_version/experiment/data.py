@@ -140,7 +140,9 @@ def download_pach_repo(
     else:
         print('download_pach_repo: previous_commit is None.')
         print(project, repo, branch, commit)
-        for file_info in client.walk_file(Commit(project=project, repo=repo, branch=branch, id=commit), "/"):
+        #commit_object = Commit(project=project, repo=repo, branch=branch, id=commit)
+        commit_object = Commit(repo='mri_raw_data', branch='branch_v1', project='Brain-MRI', id='3c6021c926d145cfbef63c6a9519de57')
+        for file_info in client.walk_file(commit_object, "/"):
             src_path = file_info.file.path
             des_path = os.path.join(root, src_path[1:])
             print(f"Got src='{src_path}', des='{des_path}'")
