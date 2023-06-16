@@ -251,43 +251,43 @@ def main():
 
     print(f"Starting pipeline: name='{pipeline}', repo='{args.repo}', job_id='{job_id}'")
 
-    # --- Download code repository
+    # # --- Download code repository
 
-    local_repo = os.path.join(os.getcwd(), "code-repository")
-    clone_code(args.git_url, args.git_ref, local_repo)
+    # local_repo = os.path.join(os.getcwd(), "code-repository")
+    # clone_code(args.git_url, args.git_ref, local_repo)
 
-    # --- Points to the correct subfolder inside the cloned repo
+    # # --- Points to the correct subfolder inside the cloned repo
 
-    if args.sub_dir:
-        workdir = os.path.join(local_repo, args.sub_dir)
-    else:
-        workdir = local_repo
+    # if args.sub_dir:
+    #     workdir = os.path.join(local_repo, args.sub_dir)
+    # else:
+    #     workdir = local_repo
 
-    config_file = os.path.join(workdir, args.config)
+    # config_file = os.path.join(workdir, args.config)
 
-    # --- Read and setup experiment config file. Then, run experiment
+    # # --- Read and setup experiment config file. Then, run experiment
 
-    config = setup_config(config_file, args.repo, pipeline, job_id)
-    client = create_client()
-    model = get_or_create_model(client, args.model, pipeline, args.repo)
-    exp = run_experiment(client, config, workdir, model)
+    # config = setup_config(config_file, args.repo, pipeline, job_id)
+    # client = create_client()
+    # model = get_or_create_model(client, args.model, pipeline, args.repo)
+    # exp = run_experiment(client, config, workdir, model)
 
-    if exp is None:
-        print("Aborting pipeline as experiment did not succeed")
-        return
+    # if exp is None:
+    #     print("Aborting pipeline as experiment did not succeed")
+    #     return
 
-    # --- Get best checkpoint from experiment. It may not exist if the experiment did not succeed
+    # # --- Get best checkpoint from experiment. It may not exist if the experiment did not succeed
 
-    checkpoint = get_checkpoint(exp)
+    # checkpoint = get_checkpoint(exp)
 
-    if checkpoint is None:
-        print("No checkpoint found (probably there was no data). Aborting pipeline")
-        return
+    # if checkpoint is None:
+    #     print("No checkpoint found (probably there was no data). Aborting pipeline")
+    #     return
 
-    # --- Now, register checkpoint on model and download it
+    # # --- Now, register checkpoint on model and download it
 
-    register_checkpoint(checkpoint, model, job_id)
-    write_model_info("/pfs/out/model-info.yaml", args.model, job_id, pipeline, args.repo)
+    # register_checkpoint(checkpoint, model, job_id)
+    # write_model_info("/pfs/out/model-info.yaml", args.model, job_id, pipeline, args.repo)
 
     print(f"Ending pipeline: name='{pipeline}', repo='{args.repo}', job_id='{job_id}'")
 

@@ -7,12 +7,12 @@ input:
         name: pipeline_input_data                  # Replace repo@branch with this name. Both paths "pfs/pipeline_input_data" & "pfs/out" are mounted on the k8s pod container.
         repo: mri_raw_data
         branch: branch_v1                          # specify which branch of the repo as the input to the pipeline during executing the job/datum.
-        glob: /                                    # specify the datum shape, which in turn affect the data parallelism.
+        glob: /*/*                                    # specify the datum shape, which in turn affect the data parallelism.
         empty_files: false                         # ?
 autoscaling: true                                  # automatic scale-up and scale-down number of the workers, with maximum specified by "parallelism_spec".
 parallelism_spec:
     constant: 8
-reprocess_spec: every_job                          # reprocess every datum even the input datums have not change. Another value is "until_success"
+reprocess_spec: until_success                          # reprocess every datum even the input datums have not change. Another value is "until_success" and "every_job"
 transform:
     cmd:                                           # the cmd is repeatedly executed for every datum under the same job.
         - sh
