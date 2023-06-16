@@ -118,6 +118,7 @@ def setup_config(config_file, repo, pipeline, job_id):
     config["data"]["pachyderm"]["host"] = os.getenv("PACHD_LB_SERVICE_HOST")
     config["data"]["pachyderm"]["port"] = os.getenv("PACHD_LB_SERVICE_PORT")
     config["data"]["pachyderm"]["repo"] = repo
+    #config["data"]["pachyderm"]["pipeline_input_name"]
     config["data"]["pachyderm"]["branch"] = job_id
     config["data"]["pachyderm"]["token"] = os.getenv("PAC_TOKEN")
 
@@ -254,7 +255,11 @@ def main():
     job_id = os.getenv("PACH_JOB_ID")
     pipeline = os.getenv("PPS_PIPELINE_NAME")
     args = parse_args()
-    input_commit = os.getenv("mri_raw_data_COMMIT")
+    
+    original_pachyderm_config = read_config("/code/pds_version/pipelines/training-pipeline.yml")
+    print(original_pachyderm_config.input.pfs.name+"_COMMIT")
+    input_commit = os.getenv(original_pachyderm_config.input.pfs.name+"_COMMIT")
+    
     print(f"Starting pipeline: name='{pipeline}', repo='{args.repo}', job_id='{job_id}'")
 
     # # --- Download code repository
@@ -295,9 +300,9 @@ def main():
     # register_checkpoint(checkpoint, model, job_id)
     # write_model_info("/pfs/out/model-info.yaml", args.model, job_id, pipeline, args.repo)
 
-    print(workdir)
-    print(config_file)
-    print(config)
+    print("workdir: ", workdir)
+    print('original pachyderm config_file: ', original_pachyderm_config)
+    print('final usable config file: ', config)
     print("input_commit: ",args.repo+"_COMMIT:", input_commit)
     print(os.environ)
     print(f"Ending pipeline: name='{pipeline}', repo='{args.repo}', job_id='{job_id}'")
