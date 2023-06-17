@@ -179,23 +179,17 @@ def execute_experiment(
         else:
             parent_id = checkpoint.training.experiment_id
             configfile["data"]["pachyderm"]["previous_commit"] = pach_version
-            exp = client.continue_experiment(
-                configfile, parent_id, checkpoint.uuid
-            )
+            exp = client.continue_experiment(configfile, parent_id, checkpoint.uuid)
 
-        print(
-            f"Created experiment with id='{exp.id}' (parent_id='{parent_id}'). Waiting for its completion..."
-        )
-
+        print(f"Created experiment with id='{exp.id}' (parent_id='{parent_id}'). Waiting for its completion...")
         state = exp.wait()
-        print(
-            f"Experiment with id='{exp.id}' ended with the following state: {state}"
-        )
-
+        
+        print(f"Experiment with id='{exp.id}' ended with the following state: {state}")
         if state == ExperimentState.COMPLETED:
             return exp
         else:
             return None
+        
     except AssertionError:
         print("Experiment exited with abnormal state")
         return None
@@ -212,9 +206,7 @@ def run_experiment(client, configfile, code_path, model):
         return execute_experiment(client, configfile, code_path, None)
     else:
         print("Continuing experiment on DeterminedAI...")
-        return execute_experiment(
-            client, configfile, None, version.checkpoint, version.name
-        )
+        return execute_experiment(client, configfile, None, version.checkpoint, version.name)
 
 
 # =====================================================================================
@@ -238,9 +230,9 @@ def get_or_create_model(client, model_name, pipeline, repo, workspace):
         model = client.get_models(name=model_name)[0]
     else:
         print(
-            f"Creating a new model on the determinedAI model registry. The model name is: {model_name}")
+            f"Creating a new model entry at the determinedAI's model registry. The model name is: {model_name}")
         model = client.create_model(name=model_name,
-                                    labels=[pipeline, repo],
+                                    labels=[pipeline, repo],  # they appear as tags on the determinedAI dashboard
                                     metadata={"pipeline": pipeline,
                                               "repository": repo},
                                     workspace_name=workspace,
@@ -252,7 +244,7 @@ def get_or_create_model(client, model_name, pipeline, repo, workspace):
 
 
 def register_checkpoint(checkpoint, model, job_id):
-    print(f"Registering checkpoint on model : {model.name}")
+    print(f"Registering/Upload checkpoint to the model registry : {model.name}")
     version = model.register_version(checkpoint.uuid)
     version.set_name(job_id)
     version.set_notes("Job_id/commit_id = " + job_id)
@@ -310,9 +302,8 @@ def main():
         det_client = create_client()
 
     # retrieve or create the model on the determinedAI model registry. pipeline and args.repo are metadata added to the model registry. Only args.model is required.
-    model = get_or_create_model(
-        det_client, args.model, pipeline, args.repo, config["workspace"])
-
+    model = get_or_create_model(det_client, args.model, pipeline, args.repo, config["workspace"])
+    
     # Submit experiment to mldm platform and return the experiment metadata
     exp = run_experiment(det_client, config, workdir, model)
     if exp is None:
@@ -327,15 +318,13 @@ def main():
 
     # --- Now, register checkpoint on model and download it
     register_checkpoint(checkpoint, model, job_id)
-    write_model_info("/pfs/out/model-info.yaml", args.model,
-                     job_id, pipeline, args.repo)
+    write_model_info("/pfs/out/model-info.yaml", args.model, job_id, pipeline, args.repo)
 
     # print("workdir: ", workdir)
     # print('original pachyderm config_file: ', original_pachyderm_config)
     # print('final usable config file: ', config)
     # print(os.environ)
-    print(
-        f"Ending pipeline: name='{pipeline}', repo='{args.repo}', job_id='{job_id}'")
+    print(f"Ending pipeline: name='{pipeline}', 'project_name'='{args.pach_project_name}', repo='{args.repo}', 'branch='{args.branch}, 'input_repo_commit:'{input_commit}', job_id='{job_id}'")
 
 
 # =====================================================================================
