@@ -159,8 +159,8 @@ def download_pach_repo(
         with safe_open_wb(des_path) as dest_file:
             shutil.copyfileobj(src_file, dest_file)
                 
-        if counter==500:
-            break
+        # if counter==500:
+        #     break
         counter=counter+1
         
 
