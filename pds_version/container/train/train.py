@@ -301,7 +301,7 @@ def main():
     det_client = create_client()
     
     # retrieve or create the model on the determinedAI model registry. pipeline and args.repo are metadata added to the model registry. Only args.model is required.
-    model = get_or_create_model(det_client, args.model, pipeline, args.repo, config.workspace)
+    model = get_or_create_model(det_client, args.model, pipeline, args.repo, config["workspace"])
 
     # Submit experiment to mldm platform and return the experiment metadata
     exp = run_experiment(det_client, config, workdir, model)
