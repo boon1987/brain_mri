@@ -168,9 +168,7 @@ def create_client(user=None):
 # =====================================================================================
 
 
-def execute_experiment(
-    client, configfile, code_path, checkpoint, pach_version=None
-):
+def execute_experiment(client, configfile, code_path, checkpoint, pach_version=None):
     try:
         if checkpoint is None:
             parent_id = None
