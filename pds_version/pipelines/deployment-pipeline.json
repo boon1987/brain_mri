@@ -21,22 +21,22 @@
     "image": "hpelabssg/pdk:deploy_brain_0.0.1",
     "secrets": [
       {
-        "name": "pipeline-secret",
+        "name": "pachyderm-determined-pipeline-secret",
         "key": "det_master",
         "env_var": "DET_MASTER"
       },
       {
-        "name": "pipeline-secret",
+        "name": "pachyderm-determined-pipeline-secret",
         "key": "det_user",
         "env_var": "DET_USER"
       },
       {
-        "name": "pipeline-secret",
+        "name": "pachyderm-determined-pipeline-secret",
         "key": "det_password",
         "env_var": "DET_PASSWORD"
       },
       {
-        "name": "pipeline-secret",
+        "name": "pachyderm-determined-pipeline-secret",
         "key": "kserve_namespace",
         "env_var": "KSERVE_NAMESPACE"
       },
@@ -54,7 +54,7 @@
         "name": "pachyderm-determined-pipeline-secret",
         "key": "s3_secret_key",
         "env_var": "S3_SECRET_KEY"
-      } 
+      }  
     ]
   },
   "pod_patch": "[{\"op\": \"add\",\"path\": \"/volumes/-\",\"value\": {\"name\": \"task-pv-storage\",\"persistentVolumeClaim\": {\"claimName\": \"task-det-checkpoints-pvc\"}}}, {\"op\": \"add\",\"path\": \"/containers/0/volumeMounts/-\",\"value\": {\"mountPath\": \"/determined_shared_fs\",\"name\": \"task-pv-storage\"}}]"
