@@ -243,7 +243,7 @@ def get_or_create_model(client, model_name, pipeline, repo, workspace):
                                     labels=[pipeline, repo],
                                     metadata={"pipeline": pipeline,
                                               "repository": repo},
-                                    workspace=workspace,
+                                    workspace_name=workspace,
                                     )
     return model
 
@@ -304,7 +304,10 @@ def main():
                           args.repo, args.branch, input_commit, pipeline, job_id)
 
     # create determinedAI client
-    det_client = create_client(user=config["workspace"])
+    if config["workspace"] == "khanghua.boon":
+        det_client = create_client(user=config["workspace"])
+    else:
+        det_client = create_client()
 
     # retrieve or create the model on the determinedAI model registry. pipeline and args.repo are metadata added to the model registry. Only args.model is required.
     model = get_or_create_model(
