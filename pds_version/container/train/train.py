@@ -291,21 +291,19 @@ def main():
     # # --- Read and setup experiment config file. Then, run experiment
     config = setup_config(config_file, args.pach_project_name,
                           args.repo, args.branch, input_commit, pipeline, job_id)
-
-    # create determinedAI client
-    if config["workspace"] == "khanghua.boon":
-        det_client = create_client(user=config["workspace"])
-    else:
-        det_client = create_client()
-
-    # retrieve or create the model on the determinedAI model registry. pipeline and args.repo are metadata added to the model registry. Only args.model is required.
     if config["workspace"] == "khanghua.boon":
         workspace = "khanghua.boon"
+        user = workspace
     else:
+        user = None
         workspace = None
         config.pop('workspace')
         config.pop('project')
         
+    # create determinedAI client
+    det_client = create_client(user=user)
+
+    # retrieve or create the model on the determinedAI model registry. pipeline and args.repo are metadata added to the model registry. Only args.model is required.        
     model = get_or_create_model(det_client, args.model, pipeline, args.repo, workspace)
     
     # Submit experiment to mldm platform and return the experiment metadata
