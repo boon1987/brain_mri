@@ -141,7 +141,7 @@ def download_pach_repo(
     else:
         print('download_pach_repo: previous_commit is None.')
         print(project, repo, branch, commit)
-        commit_object = Commit(project=project, repo=repo, branch=branch, id=commit)
+        commit_object = Commit(project=project, repo=repo, branch=branch, id=commit) # retrieve the specified commit to train the model. The "commit" here is the specific commit of the training dataset with the order of "project->repo->branch->commit".
         #commit_object = python_pachyderm.pfs.Commit(repo='mri_raw_data', branch='branch_v1', project='Brain-MRI', id='3c6021c926d145cfbef63c6a9519de57')
         for file_info in client.walk_file(commit_object, "/"):
             src_path = file_info.file.path

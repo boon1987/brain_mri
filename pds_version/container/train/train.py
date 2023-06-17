@@ -231,8 +231,7 @@ def get_or_create_model(client, model_name, pipeline, repo, workspace):
             f"Creating a new model entry at the determinedAI's model registry. The model name is: {model_name}")
         model = client.create_model(name=model_name,
                                     labels=[pipeline, repo],  # they appear as tags on the determinedAI dashboard
-                                    metadata={"pipeline": pipeline,
-                                              "repository": repo},
+                                    metadata={"pipeline": pipeline, "repository": repo},
                                     workspace_name=workspace,
                                     )
     return model
@@ -300,7 +299,11 @@ def main():
         det_client = create_client()
 
     # retrieve or create the model on the determinedAI model registry. pipeline and args.repo are metadata added to the model registry. Only args.model is required.
-    model = get_or_create_model(det_client, args.model, pipeline, args.repo, config["workspace"])
+    if config["workspace"] == "khanghua.boon":
+        workspace = "khanghua.boon"
+    else:
+        workspace = None
+    model = get_or_create_model(det_client, args.model, pipeline, args.repo, workspace)
     
     # Submit experiment to mldm platform and return the experiment metadata
     exp = run_experiment(det_client, config, workdir, model)
