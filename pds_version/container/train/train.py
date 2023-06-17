@@ -151,12 +151,18 @@ def setup_config(config_file, project, repo, branch, input_commit, pipeline, job
 
 # =====================================================================================
 
-def create_client():
-    return DeterminedClient(
-        master=os.getenv("DET_MASTER"),
-        user=os.getenv("DET_USER"),
-        password=os.getenv("DET_PASSWORD"),
-    )
+def create_client(user=None):
+    if user is None:
+        client = DeterminedClient(master=os.getenv("DET_MASTER"),
+                                  user=os.getenv("DET_USER"),
+                                  password=os.getenv("DET_PASSWORD"),
+                                  )
+    else:
+        client = DeterminedClient(master=os.getenv("DET_MASTER"),
+                                  user=user,
+                                  password=os.getenv("DET_PASSWORD"),
+                                  )
+    return client
 
 
 # =====================================================================================
@@ -222,17 +228,17 @@ def get_checkpoint(exp):
 
 
 # =====================================================================================
-
-
 def get_or_create_model(client, model_name, pipeline, repo, workspace):
     # Retrieve the models from the DeterminedAI registry into a list.
     models = client.get_models(name=model_name)
 
     if len(models) > 0:
-        print(f"Model already present in the determinedAI model registry. Updating it : {model_name}")
+        print(
+            f"Model already present in the determinedAI model registry. Updating it : {model_name}")
         model = client.get_models(name=model_name)[0]
     else:
-        print(f"Creating a new model on the determinedAI model registry. The model name is: {model_name}")
+        print(
+            f"Creating a new model on the determinedAI model registry. The model name is: {model_name}")
         model = client.create_model(name=model_name,
                                     labels=[pipeline, repo],
                                     metadata={"pipeline": pipeline,
@@ -296,12 +302,13 @@ def main():
     # # --- Read and setup experiment config file. Then, run experiment
     config = setup_config(config_file, args.pach_project_name,
                           args.repo, args.branch, input_commit, pipeline, job_id)
-    
+
     # create determinedAI client
-    det_client = create_client()
-    
+    det_client = create_client(user=config["workspace"])
+
     # retrieve or create the model on the determinedAI model registry. pipeline and args.repo are metadata added to the model registry. Only args.model is required.
-    model = get_or_create_model(det_client, args.model, pipeline, args.repo, config["workspace"])
+    model = get_or_create_model(
+        det_client, args.model, pipeline, args.repo, config["workspace"])
 
     # Submit experiment to mldm platform and return the experiment metadata
     exp = run_experiment(det_client, config, workdir, model)
@@ -324,7 +331,8 @@ def main():
     # print('original pachyderm config_file: ', original_pachyderm_config)
     # print('final usable config file: ', config)
     # print(os.environ)
-    print(f"Ending pipeline: name='{pipeline}', repo='{args.repo}', job_id='{job_id}'")
+    print(
+        f"Ending pipeline: name='{pipeline}', repo='{args.repo}', job_id='{job_id}'")
 
 
 # =====================================================================================
