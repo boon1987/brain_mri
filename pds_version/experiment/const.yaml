@@ -37,3 +37,6 @@ resources:
   slots_per_trial: 1
 max_restarts: 0
 entrypoint: model_def:MRIUnetTrial
+environment:
+  image:
+    cuda: boon1987/mldm_mlde_lung_disease:latest
