@@ -128,8 +128,8 @@ def download_pach_repo(
         print('download_pach_repo: previous_commit is not None.')
         print('previous_commit: ', previous_commit)
         for diff in client.diff_file(
-            Commit(repo=repo, id=job_id, project=project), "/",     # retrieve the input commit of the current pachyderm pipeline job
-            Commit(repo=repo, id=previous_commit, project=project), # retrieve the input commit of the previous pachyderm pipeline job
+            Commit(repo=repo, id=job_id, project=project), "/",     # retrieve the input commit of the current pachyderm pipeline job. repo is the repo_name containing the input dataset.
+            Commit(repo=repo, id=previous_commit, project=project), # retrieve the input commit of the previous pachyderm pipeline job. repo is the repo_name containing the input dataset.
         ):
             src_path = diff.new_file.file.path
             des_path = os.path.join(root, src_path[1:])
