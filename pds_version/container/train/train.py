@@ -36,14 +36,15 @@ class DeterminedClient(Determined):
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Determined AI Experiment Runner")
+    parser = argparse.ArgumentParser(
+        description="Determined AI Experiment Runner")
 
     parser.add_argument(
         "--pach_config",
         type=str,
         help="Pachyderm's configuration file",
     )
-    
+
     parser.add_argument(
         "--pach_project_name",
         type=str,
@@ -55,13 +56,13 @@ def parse_args():
         type=str,
         help="Name of the Pachyderm's repository containing the dataset",
     )
-    
+
     parser.add_argument(
         "--branch",
         type=str,
         help="Name of the Pachyderm's repository's branch containing the dataset",
     )
-    
+
     parser.add_argument(
         "--config",
         type=str,
@@ -97,7 +98,7 @@ def parse_args():
         type=str,
         help="Directory containing the experiment code to be submitted to DeterminedAI.",
     )
-    
+
     return parser.parse_args()
 
 
@@ -137,7 +138,7 @@ def setup_config(config_file, project, repo, branch, input_commit, pipeline, job
     config["data"]["pachyderm"]["port"] = os.getenv("PACHD_LB_SERVICE_PORT")
     config["data"]["pachyderm"]["project"] = project
     config["data"]["pachyderm"]["repo"] = repo
-    #config["data"]["pachyderm"]["pipeline_input_name"]
+    # config["data"]["pachyderm"]["pipeline_input_name"]
     config["data"]["pachyderm"]["branch"] = branch
     config["data"]["pachyderm"]["commit"] = input_commit
     config["data"]["pachyderm"]["job_id"] = job_id
@@ -223,20 +224,21 @@ def get_checkpoint(exp):
 # =====================================================================================
 
 
-def get_or_create_model(client, model_name, pipeline, repo):
+def get_or_create_model(client, model_name, pipeline, repo, workspace):
+    # Retrieve the models from the DeterminedAI registry into a list.
     models = client.get_models(name=model_name)
 
     if len(models) > 0:
-        print(f"Model already present. Updating it : {model_name}")
+        print(f"Model already present in the determinedAI model registry. Updating it : {model_name}")
         model = client.get_models(name=model_name)[0]
     else:
-        print(f"Creating a new model : {model_name}")
-        model = client.create_model(
-            name=model_name,
-            labels=[pipeline, repo],
-            metadata={"pipeline": pipeline, "repository": repo},
-        )
-
+        print(f"Creating a new model on the determinedAI model registry. The model name is: {model_name}")
+        model = client.create_model(name=model_name,
+                                    labels=[pipeline, repo],
+                                    metadata={"pipeline": pipeline,
+                                              "repository": repo},
+                                    workspace=workspace,
+                                    )
     return model
 
 
@@ -281,7 +283,7 @@ def main():
     job_id = os.getenv("PACH_JOB_ID")
     pipeline = os.getenv("PPS_PIPELINE_NAME")
     args = parse_args()
-    
+
     # Use latest commit from pachyderm pipeline input data repo
     original_pachyderm_config = read_config(args.pach_config)
     input_commit_env_name = original_pachyderm_config["input"]["pfs"]["name"]+"_COMMIT"
@@ -290,14 +292,19 @@ def main():
 
     workdir = args.work_dir
     config_file = os.path.join(workdir, args.config)
-    
+
     # # --- Read and setup experiment config file. Then, run experiment
-    config = setup_config(config_file, args.pach_project_name, args.repo, args.branch, input_commit, pipeline, job_id)
-    client = create_client()
-    model = get_or_create_model(client, args.model, pipeline, args.repo)
+    config = setup_config(config_file, args.pach_project_name,
+                          args.repo, args.branch, input_commit, pipeline, job_id)
     
+    # create determinedAI client
+    det_client = create_client()
+    
+    # retrieve or create the model on the determinedAI model registry. pipeline and args.repo are metadata added to the model registry. Only args.model is required.
+    model = get_or_create_model(det_client, args.model, pipeline, args.repo, config.workspace)
+
     # Submit experiment to mldm platform and return the experiment metadata
-    exp = run_experiment(client, config, workdir, model)
+    exp = run_experiment(det_client, config, workdir, model)
     if exp is None:
         print("Aborting pipeline as experiment did not succeed")
         return
@@ -310,7 +317,8 @@ def main():
 
     # --- Now, register checkpoint on model and download it
     register_checkpoint(checkpoint, model, job_id)
-    write_model_info("/pfs/out/model-info.yaml", args.model, job_id, pipeline, args.repo)
+    write_model_info("/pfs/out/model-info.yaml", args.model,
+                     job_id, pipeline, args.repo)
 
     # print("workdir: ", workdir)
     # print('original pachyderm config_file: ', original_pachyderm_config)
