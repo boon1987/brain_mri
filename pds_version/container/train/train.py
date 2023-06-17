@@ -303,6 +303,9 @@ def main():
         workspace = "khanghua.boon"
     else:
         workspace = None
+        config.pop('workspace')
+        config.pop('project')
+        
     model = get_or_create_model(det_client, args.model, pipeline, args.repo, workspace)
     
     # Submit experiment to mldm platform and return the experiment metadata
