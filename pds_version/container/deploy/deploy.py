@@ -29,14 +29,21 @@ from torchvision import models, transforms
 # =====================================================================================
 
 
+# def parse_args():
+#     parser = argparse.ArgumentParser(description="Deploy a model to KServe")
+#     parser.add_argument("--deployment-name", type=str,
+#                         help="Name of the resulting KServe InferenceService")
+#     parser.add_argument("--gcs-model-bucket", type=str,
+#                         help="GS Bucket name to use for storing model artifacts")
+#     return parser.parse_args()
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Deploy a model to KServe")
-    parser.add_argument("--deployment-name", type=str,
-                        help="Name of the resulting KServe InferenceService")
-    parser.add_argument("--gcs-model-bucket", type=str,
-                        help="GS Bucket name to use for storing model artifacts")
+    parser.add_argument("--deployment-name", type=str, help="Name of the resulting KServe InferenceService")
+    parser.add_argument("--cloud-model-host", type=str, help="s3 and gcp supported currently for storing model artifacts", choices=['gcp', 's3'])
+    parser.add_argument("--cloud-model-bucket", type=str, help="Cloud Bucket name to use for storing model artifacts")
+    parser.add_argument("--google-application-credentials", type=str, help="Path to Google Application Credentials file", default=None)
     return parser.parse_args()
-
 
 # =====================================================================================
 
@@ -152,9 +159,56 @@ def create_properties_file(model_name, model_version):
 # =====================================================================================
 
 
-def upload_model(model_name, files, bucket_name):
-    print("Uploading model files to model repository in GCS bucket...")
+# def upload_model(model_name, files, bucket_name):
+#     print("Uploading model files to model repository in GCS bucket...")
+#     storage_client = storage.Client()
+#     bucket = storage_client.get_bucket(bucket_name)
+
+#     for file in files:
+#         if "config" in str(file):
+#             folder = "config"
+#         else:
+#             folder = "model-store"
+#         blob = bucket.blob(model_name + "/" + folder + "/" + file)
+#         blob.upload_from_filename("./" + file)
+
+#     print("Upload to GCS complete.")
+
+
+def upload_model(model_name, files, cloud_provider, bucket_name):
+    print(f"Uploading model files to model repository to cloud provider {cloud_provider} in bucket {bucket_name}...")
+    if cloud_provider.lower() == 'gcp':
+        upload_model_to_gcs(model_name, files, bucket_name)
+    elif cloud_provider.lower() == 's3':
+        upload_model_to_s3(model_name, files, bucket_name)
+    else:
+        raise Exception(f"Invalid cloud provider {cloud_provider} specified")
+
+
+def upload_model_to_s3(model_name, files, bucket_name):
+    import boto3
+    storage_client = boto3.client('s3', 
+        endpoint_url = os.getenv("S3_ENDPOINT"),
+        aws_access_key_id = os.getenv("S3_ACCESS_KEY"),
+        aws_secret_access_key = os.getenv("S3_SECRET_KEY"),
+        use_ssl = False,
+        verify = False
+    )
+    for file in files:
+        if "config" in str(file):
+            folder = "config"
+        else:
+            folder = "model-store"
+
+        prefix = f'{model_name}/{folder}/'
+        storage_client.upload_file("./" + file, bucket_name, prefix+file)
+
+    print("Upload to S3 complete.")
+
+
+def upload_model_to_gcs(model_name, files, bucket_name):
     storage_client = storage.Client()
+    
     bucket = storage_client.get_bucket(bucket_name)
 
     for file in files:
@@ -273,14 +327,13 @@ def main():
     ksrv = KServeInfo()
     model = ModelInfo("/pfs/data/model-info.yaml")
 
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/determined_shared_fs/service-account.json"
-
-    print(
-        f"Starting pipeline: deploy-name='{args.deployment_name}', model='{model.name}', version='{model.version}'")
+    if args.google_application_credentials:
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = args.google_application_credentials
+        
+    print(f"Starting pipeline: deploy-name='{args.deployment_name}', model='{model.name}', version='{model.version}'")
 
     # Pull Determined.AI Checkpoint, load it, and create ScriptModule (TorchScript)
-    create_scriptmodule(det.master, det.username,
-                        det.password, model.name, model.version)
+    create_scriptmodule(det.master, det.username, det.password, model.name, model.version)
 
     # Create .mar file from ScriptModule
     create_mar_file(model.name, model.version)
@@ -289,24 +342,29 @@ def main():
     model_files = create_properties_file(model.name, model.version)
 
     # Upload model artifacts to GCS bucket in the format for TorchServe
-    upload_model(model.name, model_files, args.gcs_model_bucket)
+    # upload_model(model.name, model_files, args.gcs_model_bucket)
+    
+    # Upload model artifacts to Cloud  bucket in the format for TorchServe
+    upload_model(model.name, model_files, args.cloud_model_host, args.cloud_model_bucket)
 
     # Instantiate KServe Client using kubeconfig
-    kclient = KServeClient(config_file="/determined_shared_fs/k8s.config")
+    k8s_config_file = "/determined_shared_fs/k8s.config"
+    if os.path.exists(k8s_config_file):
+        print ('k8s_config_file exists')
+        kclient = KServeClient(config_file=k8s_config_file)
+    else:
+        kclient = KServeClient()
 
     # Check if a previous version of the InferenceService exists (return true/false)
     replace = check_existence(kclient, args.deployment_name, ksrv.namespace)
 
     # Create or replace inference service
-    create_inference_service(
-        kclient, ksrv.namespace, model.name, args.deployment_name, model.version, replace)
+    create_inference_service(kclient, ksrv.namespace, model.name, args.deployment_name, model.version, replace)
 
     # Wait for InferenceService to be ready for predictions
-    wait_for_deployment(kclient, ksrv.namespace,
-                        args.deployment_name, model.name)
+    wait_for_deployment(kclient, ksrv.namespace, args.deployment_name, model.name)
 
-    print(
-        f"Ending pipeline: deploy-name='{args.deployment_name}', model='{model.name}', version='{model.version}'")
+    print(f"Ending pipeline: deploy-name='{args.deployment_name}', model='{model.name}', version='{model.version}'")
 
 
 # =====================================================================================

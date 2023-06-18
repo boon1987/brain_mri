@@ -5,7 +5,7 @@ WORKDIR /app
 COPY requirements.txt /app
 RUN pip install -r requirements.txt
 
-COPY deploy.py /app
-COPY brain_mri_handler.py /app
+#COPY deploy.py /app
+#COPY brain_mri_handler.py /app
 
 ENV PYTHONUNBUFFERED=1
