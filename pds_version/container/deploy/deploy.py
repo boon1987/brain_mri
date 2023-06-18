@@ -85,12 +85,10 @@ def get_version(client, model_name, model_version) -> ModelVersion:
 
 def create_scriptmodule(det_master, det_user, det_pw, model_name, pach_id):
 
-    print(
-        f"Loading model version '{model_name}/{pach_id}' from master at '{det_master}...'")
-
+    print(f"Loading model version '{model_name}/{pach_id}' from master at '{det_master}...'")
+    
     if os.environ["HOME"] == "/":
         os.environ["HOME"] = "/app"
-
     os.environ["SERVING_MODE"] = "true"
 
     start = time.time()
@@ -98,19 +96,19 @@ def create_scriptmodule(det_master, det_user, det_pw, model_name, pach_id):
     version = get_version(client, model_name, pach_id)
     checkpoint = version.checkpoint
     checkpoint_dir = checkpoint.download()
-    trial = load_trial_from_checkpoint_path(
-        checkpoint_dir, map_location=torch.device("cpu"))
+    trial = load_trial_from_checkpoint_path(checkpoint_dir, map_location=torch.device("cpu"))
     end = time.time()
     delta = end - start
     print(f"Checkpoint loaded in {delta} seconds.")
 
     print(f"Creating ScriptModule from Determined checkpoint...")
-
+    
     # Create ScriptModule
     m = torch.jit.script(trial.model)
 
     # Save ScriptModule to file
     torch.jit.save(m, "scriptmodule.pt")
+    
     print(f"ScriptModule created successfully.")
 
 
@@ -188,29 +186,25 @@ def upload_model(model_name, files, cloud_provider, bucket_name):
 def upload_model_to_s3(model_name, files, bucket_name):
     import boto3
     storage_client = boto3.client('s3', 
-        endpoint_url = os.getenv("S3_ENDPOINT"),
-        aws_access_key_id = os.getenv("S3_ACCESS_KEY"),
-        aws_secret_access_key = os.getenv("S3_SECRET_KEY"),
-        use_ssl = False,
-        verify = False
-    )
+                                  endpoint_url = os.getenv("S3_ENDPOINT"),
+                                  aws_access_key_id = os.getenv("S3_ACCESS_KEY"),
+                                  aws_secret_access_key = os.getenv("S3_SECRET_KEY"),
+                                  use_ssl = False,
+                                  verify = False)
     for file in files:
         if "config" in str(file):
             folder = "config"
         else:
             folder = "model-store"
-
         prefix = f'{model_name}/{folder}/'
         storage_client.upload_file("./" + file, bucket_name, prefix+file)
-
     print("Upload to S3 complete.")
 
 
 def upload_model_to_gcs(model_name, files, bucket_name):
-    storage_client = storage.Client()
     
+    storage_client = storage.Client()
     bucket = storage_client.get_bucket(bucket_name)
-
     for file in files:
         if "config" in str(file):
             folder = "config"
@@ -218,7 +212,6 @@ def upload_model_to_gcs(model_name, files, bucket_name):
             folder = "model-store"
         blob = bucket.blob(model_name + "/" + folder + "/" + file)
         blob.upload_from_filename("./" + file)
-
     print("Upload to GCS complete.")
 
 
@@ -230,24 +223,14 @@ def create_inference_service(kclient, k8s_namespace, model_name, deployment_name
     kserve_version = "v1beta1"
     api_version = constants.KSERVE_GROUP + "/" + kserve_version
 
-    isvc = V1beta1InferenceService(
-        api_version=api_version,
-        kind=constants.KSERVE_KIND,
-        metadata=client.V1ObjectMeta(
-            name=deployment_name,
-            namespace=k8s_namespace,
-            annotations={"sidecar.istio.io/inject": "false",
-                         "pach_id": pach_id},
-        ),
-        spec=V1beta1InferenceServiceSpec(
-            predictor=V1beta1PredictorSpec(
-                pytorch=(
-                    V1beta1TorchServeSpec(
-                        protocol_version="v2", storage_uri="gs://kserve-models/%s" % (model_name))
-                )
-            )
-        ),
-    )
+    isvc = V1beta1InferenceService(api_version=api_version,
+                                   kind=constants.KSERVE_KIND,
+                                   metadata=client.V1ObjectMeta(name=deployment_name,
+                                                                namespace=k8s_namespace,
+                                                                annotations={"sidecar.istio.io/inject": "false", "pach_id": pach_id},
+                                                                ),
+                                   spec=V1beta1InferenceServiceSpec(predictor=V1beta1PredictorSpec(pytorch=(V1beta1TorchServeSpec(protocol_version="v2", storage_uri="gs://kserve-models/%s" % (model_name))))),
+                                   )
 
     if replace:
         print(f"Replacing InferenceService with new version...")
@@ -264,18 +247,15 @@ def create_inference_service(kclient, k8s_namespace, model_name, deployment_name
 
 def check_existence(kclient, deployment_name, k8s_namespace):
 
-    print(
-        f"Checking if previous version of InferenceService '{deployment_name}' exists...")
+    print(f"Checking if previous version of InferenceService '{deployment_name}' exists...")
 
     try:
         response = kclient.get(deployment_name, namespace=k8s_namespace)
         exists = True
-        print(
-            f"Previous version of InferenceService '{deployment_name}' exists.")
+        print(f"Previous version of InferenceService '{deployment_name}' exists.")
     except (RuntimeError):
         exists = False
-        print(
-            f"Previous version of InferenceService '{deployment_name}' does not exist.")
+        print(f"Previous version of InferenceService '{deployment_name}' does not exist.")
 
     return exists
 
@@ -305,15 +285,12 @@ class ModelInfo:
         with open(file, "r") as stream:
             try:
                 info = yaml.safe_load(stream)
-
                 self.name = info["name"]
                 self.version = info["version"]
                 self.pipeline = info["pipeline"]
                 self.repository = info["repo"]
-
-                print(
-                    f"Loaded model info: name='{self.name}', version='{self.version}', pipeline='{self.pipeline}', repo='{self.repository}'"
-                )
+                print(f"Loaded model info: name='{self.name}', version='{self.version}', pipeline='{self.pipeline}', repo='{self.repository}'")
+                
             except yaml.YAMLError as exc:
                 print(exc)
 

@@ -7,8 +7,8 @@ from torch.profiler import ProfilerActivity
 
 class BrainHandler(ImageClassifier):
     """
-    BrainHandler handler class. This handler extends class ImageClassifier from image_classifier.py, a
-    default handler. This handler takes an image from the reqeust body (shape and values) and returns a mask as a tensor, stored in a list of dicts.
+    BrainHandler handler class. This handler extends class ImageClassifier from image_classifier.py, a default handler. 
+    This handler takes an image from the reqeust body (shape and values) and returns a mask as a tensor, stored in a list of dicts.
 
     Here method postprocess() and preprocess() have been overridden while others are reused from parent class.
     
@@ -22,12 +22,9 @@ class BrainHandler(ImageClassifier):
 
     def __init__(self):
         super(BrainHandler, self).__init__()
-        self.profiler_args = {
-            "activities" : [ProfilerActivity.CPU],
-            "record_shapes": True,
-        }
+        self.profiler_args = {"activities" : [ProfilerActivity.CPU],
+                              "record_shapes": True,}
 
-        
         
     def preprocess(self, data):
         """Preprocess the data, fetches the image from the request body and converts to torch tensor.
