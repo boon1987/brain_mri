@@ -26,21 +26,21 @@ class BrainHandler(ImageClassifier):
                               "record_shapes": True,}
 
         
-    def preprocess(self, data):
-        """Preprocess the data, fetches the image from the request body and converts to torch tensor.
-        Args:
-            data (list): Image to be sent to the model for inference.
-        Returns:
-            tensor: A torch tensor in correct format for brain mri unet model
-        """
+    # def preprocess(self, data):
+    #     """Preprocess the data, fetches the image from the request body and converts to torch tensor.
+    #     Args:
+    #         data (list): Image to be sent to the model for inference.
+    #     Returns:
+    #         tensor: A torch tensor in correct format for brain mri unet model
+    #     """
         
-        tensor_data = data[0]["data"]
-        tensor_shape = data[0]["shape"]
-        output = torch.FloatTensor(np.array(tensor_data).reshape(tensor_shape))
+    #     tensor_data = data[0]["data"]
+    #     tensor_shape = data[0]["shape"]
+    #     output = torch.FloatTensor(np.array(tensor_data).reshape(tensor_shape))
 
-        input_img = output.unsqueeze(0)
+    #     input_img = output.unsqueeze(0)
         
-        return input_img
+    #     return input_img
         
 
     def postprocess(self, data):
