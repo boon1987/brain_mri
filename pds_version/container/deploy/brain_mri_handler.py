@@ -33,7 +33,8 @@ class BrainHandler(ImageClassifier):
         Returns:
             tensor: A torch tensor in correct format for brain mri unet model
         """
-        print(data: 'data')
+        print('data:', data)
+        
         tensor_data = data[0]["data"]
         tensor_shape = data[0]["shape"]
         output = torch.FloatTensor(np.array(tensor_data).reshape(tensor_shape))
