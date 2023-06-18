@@ -17,7 +17,7 @@ transform:
     - cd /code/pds_version/container/deploy
     - ls -l
     - pip install -r requirements.txt
-    - python deploy.py --deployment-name brain-mri1 --cloud-model-bucket kserve-models --cloud-model-host s3
+    - python deploy.py --deployment-name brain-mri --cloud-model-bucket kserve-models --cloud-model-host s3
     - rm -rf /code
   #image: "hpelabssg/pdk:deploy_0.0.1"
   image: "hpelabssg/brain_mri_pdk:v1"
