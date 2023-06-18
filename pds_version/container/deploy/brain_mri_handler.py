@@ -3,6 +3,7 @@ import numpy as np
 from torchvision import transforms
 from ts.torch_handler.image_classifier import ImageClassifier
 from torch.profiler import ProfilerActivity
+import json
 
 
 class BrainHandler(ImageClassifier):
@@ -22,8 +23,9 @@ class BrainHandler(ImageClassifier):
 
     def __init__(self):
         super(BrainHandler, self).__init__()
-        self.profiler_args = {"activities" : [ProfilerActivity.CPU],
-                              "record_shapes": True,}
+        # self.profiler_args = {"activities" : [ProfilerActivity.CPU],
+        #                       "record_shapes": True,}
+        self.profiler_args = {}
 
         
     def preprocess(self, data):
@@ -33,12 +35,13 @@ class BrainHandler(ImageClassifier):
         Returns:
             tensor: A torch tensor in correct format for brain mri unet model
         """
+        io = open(data, "r")
+        data = json.load(io)
         print('data:', data)
-        
-        tensor_data = data[0]["data"]
-        tensor_shape = data[0]["shape"]
-        output = torch.FloatTensor(np.array(tensor_data).reshape(tensor_shape))
 
+        tensor_data = data["data"]
+        tensor_shape = data["shape"]
+        output = torch.FloatTensor(np.array(tensor_data).reshape(tensor_shape))
         input_img = output.unsqueeze(0)
         
         return input_img
