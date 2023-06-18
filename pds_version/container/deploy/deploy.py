@@ -21,6 +21,7 @@ from kserve import (
     constants,
     utils,
 )
+
 from kubernetes import client
 from torch import nn
 from torch.utils.data import DataLoader, Dataset
@@ -44,6 +45,7 @@ def parse_args():
     parser.add_argument("--cloud-model-bucket", type=str, help="Cloud Bucket name to use for storing model artifacts")
     parser.add_argument("--google-application-credentials", type=str, help="Path to Google Application Credentials file", default=None)
     return parser.parse_args()
+
 
 # =====================================================================================
 

@@ -1,5 +1,5 @@
 pipeline:
-  name: brain-mri-deploy
+  name: brain-mri-deploy1
 description: Deploys a model into production via the KServe Python SDK.
 input:
   pfs:
