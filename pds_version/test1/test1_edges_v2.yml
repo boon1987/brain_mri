@@ -11,7 +11,7 @@ input:
         empty_files: false                         # ?
 autoscaling: true                                  # automatic scale-up and scale-down number of the workers, with maximum specified by "parallelism_spec".
 parallelism_spec:
-    constant: 8
+    constant: 3
 reprocess_spec: until_success                          # reprocess every datum even the input datums have not change. Another value is "until_success" and "every_job"
 transform:
     cmd:                                           # the cmd is repeatedly executed for every datum under the same job.
