@@ -1,6 +1,6 @@
 name: MRI-const
-#project: "Brain MRI"
-#workspace: khanghua.boon
+project: "Brain MRI"
+workspace: khanghua.boon
 data:
   data_dir:  '/run/determined/workdir/shared_fs/brain_mri_dataset'
   repo: 'mateuszbuda/brain-segmentation-pytorch'

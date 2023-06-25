@@ -11,4 +11,3 @@ opencv-python-headless==4.7.0.68
 pandas==1.5.2
 scikit-learn
 scikit-image==0.19.3
-
