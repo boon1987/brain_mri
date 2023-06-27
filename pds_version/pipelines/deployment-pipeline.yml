@@ -13,7 +13,7 @@ transform:
     - /bin/sh
   stdin:
     - export PYTHONUNBUFFERED=1
-    - git clone https://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@github.com/boon1987/brain_mri.git /code
+    - git clone https://github.com/boon1987/brain_mri.git /code
     - cd /code/pds_version/container/deploy
     - ls -l
     - pip install -r requirements.txt
