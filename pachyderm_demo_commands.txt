@@ -1,5 +1,5 @@
 1.0 Git Clone Brain MRI Code
-git clone  https://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@github.com/boon1987/brain_mri.git ./brain_mri_demo 
+git clone  https://github.com/boon1987/brain_mri.git ./brain_mri_demo 
 git clone  https://github.com/boon1987/brain_mri.git ./brain_mri_demo 
 
 2.0 Cd to code 
