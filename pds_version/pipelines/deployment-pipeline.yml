@@ -7,7 +7,7 @@ input:
     repo: brain-mri-train
     branch: master
     glob: /
-reprocess_spec: every_job                          # reprocess every datum even the input datums have not change. Another value is "until_success" and "every_job"
+reprocess_spec: until_success                          # reprocess every datum even the input datums have not change. Another value is "until_success" and "every_job"
 transform:
   cmd:
     - /bin/sh

@@ -8,7 +8,7 @@ input:
     branch: branch_v1
     glob: /
     empty_files: false
-reprocess_spec: every_job                          # reprocess every datum even the input datums have not change. Another value is "until_success" and "every_job"
+reprocess_spec: until_success                          # reprocess every datum even the input datums have not change. Another value is "until_success" and "every_job"
 transform:
   cmd: # the cmd is repeatedly executed for every datum under the same job.
     - sh
