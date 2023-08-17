@@ -301,6 +301,7 @@ class ModelInfo:
 
 
 def main():
+    print("Enter the correct deploy.py")
     args = parse_args()
     det = DeterminedInfo()
     ksrv = KServeInfo()

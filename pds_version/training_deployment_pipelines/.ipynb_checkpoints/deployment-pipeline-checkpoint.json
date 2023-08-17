@@ -1,0 +1,61 @@
+{
+  "pipeline": {
+    "name": "brain-mri-deploy"
+  },
+  "description": "Deploys a model into production via the KServe Python SDK.",
+  "input": {
+    "pfs": {
+      "name": "data",
+      "repo": "brain-mri-train",
+      "branch": "master",
+      "glob": "/"
+    }
+  },
+  "transform": {
+    "cmd": [
+      "/bin/sh"
+    ],
+    "stdin": [
+      "python deploy.py --deployment-name brain-mri --cloud-model-bucket kserve-models --cloud-model-host s3"
+    ],
+    "image": "hpelabssg/pdk:deploy_brain_0.0.1",
+    "secrets": [
+      {
+        "name": "pachyderm-determined-pipeline-secret",
+        "key": "det_master",
+        "env_var": "DET_MASTER"
+      },
+      {
+        "name": "pachyderm-determined-pipeline-secret",
+        "key": "det_user",
+        "env_var": "DET_USER"
+      },
+      {
+        "name": "pachyderm-determined-pipeline-secret",
+        "key": "det_password",
+        "env_var": "DET_PASSWORD"
+      },
+      {
+        "name": "pachyderm-determined-pipeline-secret",
+        "key": "kserve_namespace",
+        "env_var": "KSERVE_NAMESPACE"
+      },
+      {
+        "name": "pachyderm-determined-pipeline-secret",
+        "key": "s3_endpoint",
+        "env_var": "S3_ENDPOINT"
+      },
+      {
+        "name": "pachyderm-determined-pipeline-secret",
+        "key": "s3_access_key",
+        "env_var": "S3_ACCESS_KEY"
+      },
+      {
+        "name": "pachyderm-determined-pipeline-secret",
+        "key": "s3_secret_key",
+        "env_var": "S3_SECRET_KEY"
+      }  
+    ]
+  },
+  "pod_patch": "[{\"op\": \"add\",\"path\": \"/volumes/-\",\"value\": {\"name\": \"task-pv-storage\",\"persistentVolumeClaim\": {\"claimName\": \"task-det-checkpoints-pvc\"}}}, {\"op\": \"add\",\"path\": \"/containers/0/volumeMounts/-\",\"value\": {\"mountPath\": \"/determined_shared_fs\",\"name\": \"task-pv-storage\"}}]"
+}
