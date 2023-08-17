@@ -1,6 +1,6 @@
 pipeline:
-  name: brain-mri-train
-description: Detects changed files into a repository and triggers a retraining on that dataset
+  name: Model-Training-Pipeline
+description: Detects changed files into a repository and triggers a model retraining on that dataset
 input:
   pfs:
     name: mri_raw_data
@@ -20,22 +20,23 @@ transform:
   #image: "hpelabssg/pds:train_0.0.1"
   image: "hpelabssg/pdk:train_0.0.1"
   secrets:
-    - name: pachyderm-determined-pipeline-secret
-      key: det_master
+    - name: pachyderm-determined-secret
+      key: determined-master
       env_var: DET_MASTER
-    - name: pachyderm-determined-pipeline-secret
-      key: det_user
+    - name: pachyderm-determined-secret
+      key: determined-username
       env_var: DET_USER
-    - name: pachyderm-determined-pipeline-secret
-      key: det_password
+    - name: pachyderm-determined-secret
+      key: determined-password
       env_var: DET_PASSWORD
-    - name: pachyderm-determined-pipeline-secret
-      key: pac_token
-      env_var: PAC_TOKEN
-    - name: pachyderm-determined-pipeline-secret
-      key: pachyderm_host
+    # - name: pachyderm-determined-secret
+    #   key: pac-token
+    #   env_var: PAC_TOKEN
+    - name: pachyderm-determined-secret
+      key: pachyderm-host
       env_var: PACHD_LB_SERVICE_HOST
-    - name: pachyderm-determined-pipeline-secret
-      key: pachyderm_port
+    - name: pachyderm-determined-secret
+      key: pachyderm-port
       env_var: PACHD_LB_SERVICE_PORT
-pod_patch: '[{"op": "add","path": "/volumes/-","value": {"name": "task-pv-storage","persistentVolumeClaim": {"claimName": "task-det-checkpoints-pvc"}}}, {"op": "add","path": "/containers/0/volumeMounts/-","value": {"mountPath": "/determined_shared_fs","name": "task-pv-storage"}}]'
+pod_patch: '[{"op": "add","path": "/volumes/-","value": {"name": "det-checkpoints","hostpath": {"path": "/mnt/mapr_nfs/determined/checkpoints","type": "DirectoryOrCreate"}}}, {"op": "add","path": "/containers/0/volumeMounts/-","value": {"mountPath": "/determined_shared_fs","name": "det-checkpoints"}}]'
+
