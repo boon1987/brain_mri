@@ -1,10 +1,10 @@
 pipeline:
-  name: brain-mri-deploy1
+  name: Model-Deployment-Pipeline
 description: Deploys a model into production via the KServe Python SDK.
 input:
   pfs:
     name: data
-    repo: brain-mri-train
+    repo: Model-Training-Pipeline
     branch: master
     glob: /
 reprocess_spec: until_success                          # reprocess every datum even the input datums have not change. Another value is "until_success" and "every_job"
