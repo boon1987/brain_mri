@@ -125,11 +125,12 @@ def create_mar_file(model_name, model_version):
 
 
 # =====================================================================================
+#Sample config.properties. In production config.properties at /mnt/models/config/config.properties will be used
 
 
 def create_properties_file(model_name, model_version):
     config_properties = """inference_address=http://0.0.0.0:8085
-                            management_address=http://0.0.0.0:8081
+                            management_address=http://0.0.0.0:8085
                             metrics_address=http://0.0.0.0:8082
                             grpc_inference_port=7070
                             grpc_management_port=7071
@@ -232,7 +233,7 @@ def create_inference_service(kclient, k8s_namespace, model_name, deployment_name
                                                                 annotations={"sidecar.istio.io/inject": "false", "pach_id": pach_id},
                                                                 ),
                                    #spec=V1beta1InferenceServiceSpec(predictor=V1beta1PredictorSpec(pytorch=(V1beta1TorchServeSpec(protocol_version="v2", storage_uri="gs://kserve-models/%s" % (model_name))))),
-                                   spec=V1beta1InferenceServiceSpec(predictor=V1beta1PredictorSpec(service_account_name="sa", pytorch=(V1beta1TorchServeSpec(storage_uri="s3://kserve-models/%s" % (model_name))))),                                                        )
+                                   spec=V1beta1InferenceServiceSpec(predictor=V1beta1PredictorSpec(service_account_name="sa", pytorch=(V1beta1TorchServeSpec(protocol_version="v2", storage_uri="s3://kserve-models/%s" % (model_name))))),                                                        )
 
     if replace:
         print(f"Replacing InferenceService with new version...")
@@ -320,6 +321,8 @@ def main():
 
     # Create config.properties for .mar file, return files to upload to GCS bucket
     model_files = create_properties_file(model.name, model.version)
+    print("model_files:")
+    print(model_files)
 
     # Upload model artifacts to GCS bucket in the format for TorchServe
     # upload_model(model.name, model_files, args.gcs_model_bucket)
