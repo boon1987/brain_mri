@@ -1,18 +1,18 @@
 1.0 Git Clone Brain MRI Code
-git clone  https://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@github.com/boon1987/brain_mri.git ./brain_mri_demo 
+git clone  https://github.com/boon1987/brain_mri.git ./brain_mri_demo 
 git clone  https://github.com/boon1987/brain_mri.git ./brain_mri_demo 
 
 2.0 Cd to code 
-cd brain_mri_demo
+cd brain_mri
 
 3.0 Create OpenCV edge detection pipeline
-sudo nano pds_version/test1/test1_edges_v2.yml
-pachctl create pipeline -f ./pds_version/test1/test1_edges_v2.yml
+sudo nano pds_version/edge_detection_pipeline/edge_detection_v2.yml
+pachctl create pipeline -f ./pds_version/edge_detection_pipeline/edge_detection_v2.yml
 
 4.0 Create Brain MRI PDK Pipeline
-pachctl create pipeline -f ./pds_version/pipelines/deployment-pipeline.yml
-pachctl update pipeline -f ./pds_version/pipelines/deployment-pipeline.yml
-pachctl delete pipeline -f ./pds_version/pipelines/deployment-pipeline.yml
+pachctl create pipeline -f ./pds_version/training_deployment_pipelines/deployment-pipeline.yml
+pachctl update pipeline -f ./pds_version/training_deployment_pipelines/deployment-pipeline.yml
+pachctl delete pipeline -f ./pds_version/training_deployment_pipelines/deployment-pipeline.yml
 
 5.0 Put file to the repo
 pachctl put file -r mri_raw_data@branch_v1:kaggle_3m_dataset/data456 -f ./kaggle_3m_dataset_incremental_processing/incremental_data1
@@ -25,7 +25,7 @@ achctl list files mri_raw_data@branch_v1
 
 Other 2: Install pachyderm
 pip install python_pachyderm
-curl -o ./pachctl.deb -L https://github.com/pachyderm/pachyderm/releases/download/v2.6.1/pachctl_2.6.1_amd64.deb && dpkg -i ./pachctl.deb
+curl -o ./pachctl.deb -L https://github.com/pachyderm/pachyderm/releases/download/v2.7.2/pachctl_2.7.2_amd64.deb && dpkg -i ./pachctl.deb
 
 Other 3: Login
 Connect to Pach: pachctl connect grpc://10.90.1.52 

@@ -291,8 +291,8 @@ def main():
     # # --- Read and setup experiment config file. Then, run experiment
     config = setup_config(config_file, args.pach_project_name,
                           args.repo, args.branch, input_commit, pipeline, job_id)
-    if config["workspace"] == "khanghua.boon":
-        workspace = "khanghua.boon"
+    if config["workspace"] == "khang-hua.boon":
+        workspace = "khang-hua.boon"
         user = workspace
     else:
         user = None

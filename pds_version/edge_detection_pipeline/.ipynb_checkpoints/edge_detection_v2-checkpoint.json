@@ -1,0 +1,65 @@
+{
+    "pipeline": {
+        "name": "brain-mri-test1_edges"
+    },
+    "description": "Perform edge detection on images.",
+    "output_branch": "branch_v1",
+    "input": {
+        "pfs": {
+            "name": "pipeline_input_data",
+            "repo": "mri_raw_data",
+            "branch": "branch_v1",
+            "glob": "/",
+            "empty_files": false
+        }
+    },
+    "autoscaling": true,
+    "parallelism_spec": {
+        "constant": 8
+    },
+    "reprocess_spec": "every_job",
+    "transform": {
+        "cmd": [
+            "sh",
+            "-c",
+            "git clone https://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@github.com/boon1987/brain_mri.git /code && python3 /code/pds_version/test1/edges.py && rm -rf /code"
+        ],
+        "image": "pachyderm/opencv:1.0",
+        "stdin": [
+            "cat /code/pds_version/test1/edges.py"
+        ],
+        "secrets": [
+            {
+                "name": "pachyderm-determined-pipeline-secret",
+                "key": "det_master",
+                "env_var": "DET_MASTER"
+            },
+            {
+                "name": "pachyderm-determined-pipeline-secret",
+                "key": "det_user",
+                "env_var": "DET_USER"
+            },
+            {
+                "name": "pachyderm-determined-pipeline-secret",
+                "key": "det_password",
+                "env_var": "DET_PASSWORD"
+            },
+            {
+                "name": "pachyderm-determined-pipeline-secret",
+                "key": "pac_token",
+                "env_var": "PAC_TOKEN"
+            },
+            {
+                "name": "pachyderm-determined-pipeline-secret",
+                "key": "pachyderm_host",
+                "env_var": "PACHD_LB_SERVICE_HOST"
+            },
+            {
+                "name": "pachyderm-determined-pipeline-secret",
+                "key": "pachyderm_port",
+                "env_var": "PACHD_LB_SERVICE_PORT"
+            }
+        ]
+    },
+    "pod_patch": "[{\"op\": \"add\",\"path\": \"/volumes/-\",\"value\": {\"name\": \"task-pv-storage\",\"persistentVolumeClaim\": {\"claimName\": \"task-det-checkpoints-pvc\"}}}, {\"op\": \"add\",\"path\": \"/containers/0/volumeMounts/-\",\"value\": {\"mountPath\": \"/determined_shared_fs\",\"name\": \"task-pv-storage\"}}]"
+}

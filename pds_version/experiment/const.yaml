@@ -1,5 +1,5 @@
 name: Pipeline-Run-Brain-MRI-1GPU
-workspace: khanghua.boon
+workspace: khang-hua.boon
 project: "Brain MRI PDK"
 profiling:
   enabled: true
