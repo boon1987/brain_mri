@@ -15,13 +15,13 @@ pachctl update pipeline -f ./pds_version/training_deployment_pipelines/deploymen
 pachctl delete pipeline -f ./pds_version/training_deployment_pipelines/deployment-pipeline.yml
 
 5.0 Put file to the repo
-pachctl put file -r mri_raw_data@branch_v1:kaggle_3m_dataset/data456 -f ./kaggle_3m_dataset_incremental_processing/incremental_data1
-pachctl get file  mri_raw_data@branch_v1:kaggle_3m_dataset/data.csv > a.csv
+pachctl put file -r Input_Training_Dataset@branch_v1:kaggle_3m_dataset/incremental_data4 -f ../brain_mri_dataset/TCGA_CS_4941_19960909
+pachctl get file  Input_Training_Dataset@branch_v1:kaggle_3m_dataset/data.csv > a.csv
 
 Other 1:
 pachctl list repo 
-pachctl list branch mri_raw_data
-achctl list files mri_raw_data@branch_v1
+pachctl list branch Input_Training_Dataset
+pachctl list files Input_Training_Dataset@branch_v1
 
 Other 2: Install pachyderm
 pip install python_pachyderm
